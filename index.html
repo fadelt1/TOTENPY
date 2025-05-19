@@ -5,10 +5,10 @@
   <title>FADEL T1 PY - CONSULTA DE VIAJES</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    input, select, button { padding: 8px; margin: 5px 0; width: 100%; max-width: 300px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th { background-color: #002060; color: white; font-weight: bold; }
+    body { font-family: Arial, sans-serif; margin: 20px; padding: 10px; }
+    input, select, button { padding: 10px; margin: 5px 0; width: 100%; max-width: 300px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+    th { background-color: #002060; color: white; font-weight: bold; padding: 10px; }
     th:last-child { background-color: #C00000; }
     td { padding: 8px; border: 1px solid #ccc; text-align: left; }
     footer { text-align: center; padding: 10px; background-color: #002060; color: white; font-weight: bold; }
@@ -16,7 +16,7 @@
     /* Estilo del botón centrado y redondeado */
     #btnFiltrar {
         display: block;
-        margin: 20px auto;
+        margin: 15px auto;
         background-color: #002060;
         color: white;
         font-size: 18px;
@@ -27,10 +27,16 @@
         cursor: pointer;
         transition: 0.3s;
     }
-
-    /* Efecto al pasar el mouse */
     #btnFiltrar:hover {
         background-color: #004080;
+    }
+
+    /* Ajuste para móviles */
+    @media (max-width: 768px) {
+      body { font-size: 16px; padding: 8px; }
+      table { font-size: 13px; width: 100%; overflow-x: auto; display: block; }
+      th, td { padding: 6px; }
+      .whatsapp-btn { bottom: 10px; right: 10px; font-size: 16px; padding: 10px 12px; }
     }
 
     /* Botón flotante de WhatsApp */
@@ -149,27 +155,17 @@
 
         viajesFiltrados.forEach(viaje => {
             const fecha = viaje["DATA DA VIAGEM"] ? formatearFecha(viaje["DATA DA VIAGEM"]).toLocaleDateString("es-ES") : "Fecha no disponible";
-            const rvGeneral = parseFloat(viaje["RV GENERAL"]) || 0;
-            const viatico = parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0;
-            
-            totalRVGeneral += rvGeneral;
-            totalViatico += viatico;
+            totalRVGeneral += parseFloat(viaje["RV GENERAL"]) || 0;
+            totalViatico += parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0;
 
             tabla += `<tr>
                 <td>${fecha}</td><td>${viaje["MOTORISTA 1"] || "No disponible"}</td>
                 <td>${viaje["ORIGEM IDA"] || "No disponible"}</td><td>${viaje["DESTINO IDA"] || "No disponible"}</td>
                 <td>${viaje["FLOTA "] || "No disponible"}</td><td>${viaje["DT"] || "No disponible"}</td>
-                <td>${formatearMoneda(viatico)}</td><td>${viaje["CI"] || "No disponible"}</td>
-                <td>${viaje["TIPO"] || "No disponible"}</td><td>${formatearMoneda(rvGeneral)}</td>
+                <td>${formatearMoneda(viaje["VIATICO"])}</td><td>${viaje["CI"] || "No disponible"}</td>
+                <td>${viaje["TIPO"] || "No disponible"}</td><td>${formatearMoneda(viaje["RV GENERAL"])}</td>
             </tr>`;
         });
-
-        tabla += `<tr style="font-weight: bold; background-color: #f0f0f0;">
-            <td colspan="6">TOTAL</td>
-            <td>${formatearMoneda(totalViatico)}</td>
-            <td></td><td></td>
-            <td>${formatearMoneda(totalRVGeneral)}</td>
-        </tr>`;
 
         tabla += `</table>`;
         resultadoDiv.innerHTML = tabla;
@@ -180,6 +176,6 @@
 
   <footer>© 2025 FADEL T1 PY. Todos los derechos reservados.</footer>
 
-  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 Solicitar Ajuste! </a>
+  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 WhatsApp</a>
 </body>
 </html>
