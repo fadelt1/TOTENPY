@@ -118,39 +118,32 @@
         }
     }
 
+    function formatearMoneda(valor) {
+        if (!valor) return "₲ 0";
+        const numero = parseFloat(String(valor).replace(/[^\d]/g, ""));
+        return isNaN(numero) ? "₲ 0" : `₲ ${numero.toLocaleString("es-PY")}`;
+    }
+
     function mostrarViajes(viajes) {
         const resultadoDiv = document.getElementById("resultado");
         resultadoDiv.innerHTML = ""; 
 
         const ciFiltro = document.getElementById("ciInput").value.trim();
-        const fechaViajeInput = document.getElementById("fechaViaje").value;
-        const fechaViajeObj = fechaViajeInput ? new Date(fechaViajeInput + "T00:00:00") : null;
-
-        console.log("CI ingresado:", ciFiltro);
-        console.log("Fecha de viaje seleccionada:", fechaViajeObj);
 
         if (ciFiltro === "") {
             resultadoDiv.innerHTML = "<p>Por favor, ingrese un CI para realizar la consulta.</p>";
             return;
         }
 
-        let totalRVGeneral = 0;
-        let totalViatico = 0;
-
-        const viajesFiltrados = viajes.filter(viaje => {
-            const ciViaje = viaje["CI"] ? String(viaje["CI"]).trim() : "";
-            const cumpleCI = ciFiltro ? ciViaje === ciFiltro.trim() : true;
-
-            totalRVGeneral += parseFloat(viaje["RV GENERAL"]) || 0;
-            totalViatico += parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0;
-
-            return cumpleCI;
-        });
+        const viajesFiltrados = viajes.filter(viaje => String(viaje["CI"]).trim() === ciFiltro.trim());
 
         if (!viajesFiltrados.length) {
             resultadoDiv.innerHTML = "<p>No se encontraron viajes con los filtros aplicados.</p>";
             return;
         }
+
+        let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) => acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
+        let totalViatico = viajesFiltrados.reduce((acc, viaje) => acc + (parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0), 0);
 
         let tabla = `<table>
             <tr>
@@ -184,6 +177,6 @@
 
   <footer>© 2025 FADEL T1 PY. Todos los derechos reservados.</footer>
 
-  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 WhatsApp</a>
+  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 Solicite Ajuste! </a>
 </body>
 </html>
