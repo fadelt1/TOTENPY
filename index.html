@@ -168,7 +168,7 @@
     // Convierte una fecha en formato Excel (número) o "dd/mm/yyyy" a objeto Date
     function formatearFecha(fechaTexto) {
       if (!fechaTexto) return null;
-      // Si es numérico (ej. Excel serial date)
+      // Si el valor es numérico (por ejemplo, fecha en formato Excel)
       if (typeof fechaTexto === "number") {
         return new Date((fechaTexto - 25569) * 86400000);
       }
@@ -183,11 +183,17 @@
       return new Date(fechaTexto);
     }
   
-    // Formatea un valor numérico como moneda guaraní (₲)
+    // Formatea un valor numérico como moneda guaraní (₲) usando opciones de toLocaleString
     function formatearMoneda(valor) {
       if (!valor) return "₲ 0";
       const numero = parseFloat(String(valor).replace(/[^\d.-]/g, "")) || 0;
-      return "₲ " + numero.toLocaleString("es-PY");
+      return numero.toLocaleString("es-PY", {
+        style: "currency",
+        currency: "PYG",
+        currencyDisplay: "symbol",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
     }
   
     // Genera la tabla de viajes, incluye totales y formatea los valores a guaraníes
