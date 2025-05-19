@@ -120,6 +120,7 @@
   </style>
 </head>
 <body>
+  
   <!-- Encabezado con logo y título -->
   <div class="header">
     <!-- Reemplaza "https://TU_URL_DEL_LOGO" por la URL de tu logo -->
@@ -127,7 +128,7 @@
     <h1>FADEL T1 PY - CONSULTA DE VIAJES</h1>
   </div>
   
-  <!-- Filtros -->
+  <!-- Filtro de búsqueda -->
   <label for="ciInput">Ingrese CI:</label>
   <input type="text" id="ciInput" placeholder="Ej: 7097243">
   
@@ -165,38 +166,23 @@
       }
     }
   
-    // Convierte una fecha en formato Excel (número) o "dd/mm/yyyy" a objeto Date
+    // Convierte una cadena de fecha con formato "dd/mm/yyyy" a objeto Date
     function formatearFecha(fechaTexto) {
       if (!fechaTexto) return null;
-      // Si el valor es numérico (por ejemplo, fecha en formato Excel)
-      if (typeof fechaTexto === "number") {
-        return new Date((fechaTexto - 25569) * 86400000);
-      }
-      // Si la cadena contiene "/" se asume formato dd/mm/yyyy
-      if (String(fechaTexto).includes("/")) {
-        const partes = String(fechaTexto).split("/");
-        if (partes.length !== 3) return new Date(fechaTexto);
-        const [dia, mes, año] = partes;
-        return new Date(`${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T00:00:00`);
-      }
-      // Fallback: intenta convertir directamente a Date
-      return new Date(fechaTexto);
+      const partes = fechaTexto.split("/");
+      if (partes.length !== 3) return null;
+      const [dia, mes, año] = partes;
+      return new Date(`${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T00:00:00`);
     }
   
-    // Formatea un valor numérico como moneda guaraní (₲) usando opciones de toLocaleString
+    // Formatea un valor numérico para que aparezca en formato de guaraníes
     function formatearMoneda(valor) {
       if (!valor) return "₲ 0";
       const numero = parseFloat(String(valor).replace(/[^\d.-]/g, "")) || 0;
-      return numero.toLocaleString("es-PY", {
-        style: "currency",
-        currency: "PYG",
-        currencyDisplay: "symbol",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
+      return "₲ " + numero.toLocaleString("es-PY");
     }
   
-    // Genera la tabla de viajes, incluye totales y formatea los valores a guaraníes
+    // Genera la tabla de viajes, incluye totales y utiliza el formato de guaraníes para los valores
     function mostrarViajes(viajes) {
       const resultadoDiv = document.getElementById("resultado");
       resultadoDiv.innerHTML = "";
@@ -225,6 +211,7 @@
         return;
       }
   
+      // Crear la tabla con encabezados
       let tabla = `<table>
         <tr>
           <th>Fecha</th>
@@ -255,7 +242,8 @@
       });
   
       // Calcular totales
-      let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) => acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
+      let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) =>
+        acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
       let totalViatico = viajesFiltrados.reduce((acc, viaje) =>
         acc + (parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0), 0);
   
