@@ -120,15 +120,14 @@
   </style>
 </head>
 <body>
-  
   <!-- Encabezado con logo y título -->
   <div class="header">
     <!-- Reemplaza "https://TU_URL_DEL_LOGO" por la URL de tu logo -->
-  
+    <img src="https://TU_URL_DEL_LOGO" alt="FADEL" class="logo">
     <h1>FADEL T1 PY - CONSULTA DE VIAJES</h1>
   </div>
   
-  <!-- Filtro de búsqueda -->
+  <!-- Filtros -->
   <label for="ciInput">Ingrese CI:</label>
   <input type="text" id="ciInput" placeholder="Ej: 7097243">
   
@@ -166,23 +165,32 @@
       }
     }
   
-    // Convierte una cadena de fecha con formato "dd/mm/yyyy" a objeto Date
+    // Convierte una fecha en formato Excel (número) o "dd/mm/yyyy" a objeto Date
     function formatearFecha(fechaTexto) {
       if (!fechaTexto) return null;
-      const partes = fechaTexto.split("/");
-      if (partes.length !== 3) return null;
-      const [dia, mes, año] = partes;
-      return new Date(`${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T00:00:00`);
+      // Si es numérico (ej. Excel serial date)
+      if (typeof fechaTexto === "number") {
+        return new Date((fechaTexto - 25569) * 86400000);
+      }
+      // Si la cadena contiene "/" se asume formato dd/mm/yyyy
+      if (String(fechaTexto).includes("/")) {
+        const partes = String(fechaTexto).split("/");
+        if (partes.length !== 3) return new Date(fechaTexto);
+        const [dia, mes, año] = partes;
+        return new Date(`${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T00:00:00`);
+      }
+      // Fallback: intenta convertir directamente a Date
+      return new Date(fechaTexto);
     }
   
-    // Formatea un valor numérico para que aparezca en formato de guaraníes
+    // Formatea un valor numérico como moneda guaraní (₲)
     function formatearMoneda(valor) {
       if (!valor) return "₲ 0";
       const numero = parseFloat(String(valor).replace(/[^\d.-]/g, "")) || 0;
       return "₲ " + numero.toLocaleString("es-PY");
     }
   
-    // Genera la tabla de viajes, incluye totales y utiliza el formato de guaraníes para los valores
+    // Genera la tabla de viajes, incluye totales y formatea los valores a guaraníes
     function mostrarViajes(viajes) {
       const resultadoDiv = document.getElementById("resultado");
       resultadoDiv.innerHTML = "";
@@ -211,7 +219,6 @@
         return;
       }
   
-      // Crear la tabla con encabezados
       let tabla = `<table>
         <tr>
           <th>Fecha</th>
@@ -242,8 +249,7 @@
       });
   
       // Calcular totales
-      let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) =>
-        acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
+      let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) => acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
       let totalViatico = viajesFiltrados.reduce((acc, viaje) =>
         acc + (parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0), 0);
   
@@ -263,7 +269,7 @@
   </script>
   
   <!-- Botón flotante de WhatsApp -->
-  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 Solicitar Ajuste!</a>
+  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 WhatsApp</a>
   
   <footer>© 2025 FADEL T1 PY. Todos los derechos reservados.</footer>
 </body>
