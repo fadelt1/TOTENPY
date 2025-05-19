@@ -13,6 +13,26 @@
     td { padding: 8px; border: 1px solid #ccc; text-align: left; }
     footer { text-align: center; padding: 10px; background-color: #002060; color: white; font-weight: bold; }
 
+    /* Estilo del botón centrado y redondeado */
+    #btnFiltrar {
+        display: block;
+        margin: 20px auto; /* Centrado siempre */
+        background-color: #002060; /* Azul del encabezado */
+        color: white; /* Texto en blanco */
+        font-size: 18px;
+        font-weight: bold;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px; /* Borde redondeado */
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    /* Efecto al pasar el mouse */
+    #btnFiltrar:hover {
+        background-color: #004080; /* Azul más intenso */
+    }
+
     /* Ajuste para móviles */
     @media (max-width: 768px) {
       body { font-size: 16px; padding: 10px; }
@@ -132,38 +152,25 @@
 
         viajesFiltrados.forEach(viaje => {
             const fecha = viaje["DATA DA VIAGEM"] ? new Date(formatearFecha(viaje["DATA DA VIAGEM"])).toLocaleDateString("es-ES") : "Fecha no disponible";
-            const rvGeneral = parseFloat(viaje["RV GENERAL"]) || 0;
-            const viatico = parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0;
-
-            totalRVGeneral += rvGeneral;
-            totalViatico += viatico;
 
             tabla += `<tr>
                 <td>${fecha}</td><td>${viaje["MOTORISTA 1"] || "No disponible"}</td>
                 <td>${viaje["ORIGEM IDA"] || "No disponible"}</td><td>${viaje["DESTINO IDA"] || "No disponible"}</td>
                 <td>${viaje["FLOTA "] || "No disponible"}</td><td>${viaje["DT"] || "No disponible"}</td>
-                <td>${formatearMoneda(viatico)}</td><td>${viaje["CI"] || "No disponible"}</td>
-                <td>${viaje["TIPO"] || "No disponible"}</td><td>${formatearMoneda(rvGeneral)}</td>
+                <td>${formatearMoneda(viaje["VIATICO"])}</td><td>${viaje["CI"] || "No disponible"}</td>
+                <td>${viaje["TIPO"] || "No disponible"}</td><td>${formatearMoneda(viaje["RV GENERAL"])}</td>
             </tr>`;
         });
 
-        tabla += `<tr style="font-weight: bold; background-color: #f0f0f0;">
-            <td colspan="6">TOTAL</td><td>${formatearMoneda(totalViatico)}</td>
-            <td></td><td></td><td>${formatearMoneda(totalRVGeneral)}</td>
-        </tr></table>`;
+        tabla += `</table>`;
 
         resultadoDiv.innerHTML = tabla;
     }
 
     document.getElementById("btnFiltrar").addEventListener("click", obtenerViajesDesdeFirebase);
-    document.getElementById("ciInput").addEventListener("keypress", event => {
-        if (event.key === "Enter") {
-            obtenerViajesDesdeFirebase();
-        }
-    });
   </script>
 
   <footer>© 2025 FADEL T1 PY. Todos los derechos reservados.</footer>
-  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 WhatsApp</a>
+  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 Solicitar Ajuste!</a>
 </body>
 </html>
