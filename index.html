@@ -10,6 +10,7 @@
       margin: 20px;
       padding: 10px;
       text-align: center;
+      background-color: #fafafa;
     }
     input, select, button {
       padding: 10px;
@@ -17,12 +18,17 @@
       width: 100%;
       max-width: 300px;
       font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
       font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
     }
     th {
       background-color: #002060;
@@ -38,12 +44,25 @@
       border: 1px solid #ccc;
       text-align: left;
     }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f0f8ff;
+    }
+    .total-row {
+      font-weight: bold;
+      background-color: #e8eefc;
+      color: #002060;
+    }
     footer {
       text-align: center;
       padding: 10px;
       background-color: #002060;
       color: white;
       font-weight: bold;
+      margin-top: 30px;
+      border-radius: 6px;
     }
     /* Encabezado */
     .header {
@@ -54,10 +73,6 @@
       padding: 15px;
       border-radius: 10px;
       margin-bottom: 20px;
-    }
-    .logo {
-      max-width: 120px;
-      margin-right: 15px;
     }
     /* Botón de Filtrar */
     #btnFiltrar {
@@ -75,6 +90,13 @@
     }
     #btnFiltrar:hover {
       background-color: #004080;
+    }
+    /* Indicador de carga */
+    #loading {
+      display: none;
+      font-weight: bold;
+      color: #002060;
+      margin-top: 15px;
     }
     /* Ajuste para móviles */
     @media (max-width: 768px) {
@@ -97,9 +119,6 @@
         font-size: 16px;
         padding: 10px 12px;
       }
-      .logo {
-        max-width: 80px;
-      }
     }
     /* Botón flotante de WhatsApp */
     .whatsapp-btn {
@@ -121,52 +140,55 @@
 </head>
 <body>
   
-  <!-- Encabezado con logo y título -->
+  <!-- Encabezado -->
   <div class="header">
-    <!-- Reemplaza "https://TU_URL_DEL_LOGO" por la URL de tu logo -->
-  
     <h1>FADEL T1 PY - CONSULTA DE VIAJES</h1>
   </div>
   
   <!-- Filtro de búsqueda -->
   <label for="ciInput">Ingrese CI:</label>
   <input type="text" id="ciInput" placeholder="Ej: 7097243">
-  
+
   <label for="fechaViaje">Fecha de Viaje:</label>
   <input type="date" id="fechaViaje">
-  
+
   <button id="btnFiltrar">Ver Viajes</button>
-  
+
+  <div id="loading">⏳ Cargando datos...</div>
+
   <!-- Contenedor para mostrar la tabla -->
   <div id="resultado"></div>
   
   <script>
     async function obtenerViajesDesdeFirebase() {
+      const resultadoDiv = document.getElementById("resultado");
+      const loadingDiv = document.getElementById("loading");
+      resultadoDiv.innerHTML = "";
+      loadingDiv.style.display = "block";
+
       const url = "https://toten-paraguay-5d90f-default-rtdb.firebaseio.com/.json";
       try {
         const respuesta = await fetch(url);
-        if (!respuesta.ok)
-          throw new Error("No se pudo cargar los datos de Firebase");
+        if (!respuesta.ok) throw new Error("No se pudo cargar los datos de Firebase");
   
         const datos = await respuesta.json();
-        console.log("Datos obtenidos de Firebase:", datos);
-  
+        loadingDiv.style.display = "none";
+
         if (!datos || Object.keys(datos).length === 0) {
-          document.getElementById("resultado").innerHTML = "<p>No se encontraron viajes.</p>";
+          resultadoDiv.innerHTML = "<p>No se encontraron viajes.</p>";
           return;
         }
   
         const viajes = Object.values(datos);
-        console.log("Datos transformados:", viajes);
-  
         mostrarViajes(viajes);
       } catch (error) {
+        loadingDiv.style.display = "none";
         console.error("Error al obtener los datos:", error);
-        document.getElementById("resultado").innerHTML = "<p>Hubo un problema al cargar los datos.</p>";
+        resultadoDiv.innerHTML = "<p>Hubo un problema al cargar los datos.</p>";
       }
     }
   
-    // Convierte una cadena de fecha con formato "dd/mm/yyyy" a objeto Date
+    // Convierte una cadena "dd/mm/yyyy" a objeto Date
     function formatearFecha(fechaTexto) {
       if (!fechaTexto) return null;
       const partes = fechaTexto.split("/");
@@ -175,27 +197,31 @@
       return new Date(`${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T00:00:00`);
     }
   
-    // Formatea un valor numérico para que aparezca en formato de guaraníes
+    // Formatea a guaraníes
     function formatearMoneda(valor) {
       if (!valor) return "₲ 0";
       const numero = parseFloat(String(valor).replace(/[^\d.-]/g, "")) || 0;
       return "₲ " + numero.toLocaleString("es-PY");
     }
   
-    // Genera la tabla de viajes, incluye totales y utiliza el formato de guaraníes para los valores
     function mostrarViajes(viajes) {
       const resultadoDiv = document.getElementById("resultado");
       resultadoDiv.innerHTML = "";
-  
+
       const ciFiltro = document.getElementById("ciInput").value.trim();
       const fechaViajeInput = document.getElementById("fechaViaje").value;
       const fechaViajeObj = fechaViajeInput ? new Date(fechaViajeInput + "T00:00:00") : null;
-  
+
       if (ciFiltro === "") {
         resultadoDiv.innerHTML = "<p>Por favor, ingrese un CI para realizar la consulta.</p>";
         return;
       }
-  
+
+      if (isNaN(ciFiltro)) {
+        resultadoDiv.innerHTML = "<p>El CI debe ser numérico.</p>";
+        return;
+      }
+
       const viajesFiltrados = viajes.filter(viaje => {
         const ciViaje = String(viaje["CI"]).trim();
         const cumpleCI = ciViaje === ciFiltro;
@@ -205,13 +231,20 @@
           : true;
         return cumpleCI && cumpleFecha;
       });
-  
+
       if (!viajesFiltrados.length) {
         resultadoDiv.innerHTML = "<p>No se encontraron viajes con los filtros aplicados.</p>";
         return;
       }
-  
-      // Crear la tabla con encabezados
+
+      // Ordenar por fecha de más antiguo a más nuevo
+      viajesFiltrados.sort((a, b) => {
+        const fechaA = formatearFecha(a["DATA DA VIAGEM"]) || new Date(0);
+        const fechaB = formatearFecha(b["DATA DA VIAGEM"]) || new Date(0);
+        return fechaA - fechaB;
+      });
+
+      // Crear tabla
       let tabla = `<table>
         <tr>
           <th>Fecha</th>
@@ -225,7 +258,7 @@
           <th>Tipo</th>
           <th>RV General</th>
         </tr>`;
-  
+
       viajesFiltrados.forEach(viaje => {
         tabla += `<tr>
           <td>${viaje["DATA DA VIAGEM"]}</td>
@@ -240,25 +273,25 @@
           <td>${formatearMoneda(viaje["RV GENERAL"])}</td>
         </tr>`;
       });
-  
-      // Calcular totales
+
+      // Totales
       let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) =>
         acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
       let totalViatico = viajesFiltrados.reduce((acc, viaje) =>
         acc + (parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0), 0);
-  
-      tabla += `<tr style="font-weight: bold; background-color: #f0f0f0;">
+
+      tabla += `<tr class="total-row">
           <td colspan="6">TOTAL</td>
           <td>${formatearMoneda(totalViatico)}</td>
           <td></td>
           <td></td>
           <td>${formatearMoneda(totalRVGeneral)}</td>
         </tr>`;
-  
+
       tabla += `</table>`;
       resultadoDiv.innerHTML = tabla;
     }
-  
+
     document.getElementById("btnFiltrar").addEventListener("click", obtenerViajesDesdeFirebase);
   </script>
   
