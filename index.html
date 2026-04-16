@@ -608,7 +608,17 @@ window.abrirModalRV = async function(){
     });
 
     // Log para diagnóstico — ver campos reales
-    // campos confirmados — sin diagnóstico
+    // diagnóstico — mostrar raw values visibles en el modal
+    if(viajes.length > 0){
+      const v0 = viajes[0];
+      const diagEl = document.createElement('div');
+      diagEl.style.cssText = 'background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:10px;font-family:monospace;color:var(--amber)';
+      diagEl.innerHTML = '🔍 FLOTA=' + JSON.stringify(v0['FLOTA']) +
+        ' | CAVALO=' + JSON.stringify(v0['CAVALO']) +
+        ' | RV CHOFER=' + JSON.stringify(v0['RV CHOFER']) +
+        ' | VIATICO=' + JSON.stringify(v0['VIATICO']);
+      document.getElementById('rv-kpis').insertAdjacentElement('beforebegin', diagEl);
+    }
 
     if(!viajes.length){
       document.getElementById('rv-tabla').innerHTML =
@@ -625,17 +635,27 @@ window.abrirModalRV = async function(){
     const filas = viajes.map(v => {
       // RV — buscar todas las variantes posibles del campo
       // Campos confirmados desde Firebase real:
-      // RV CHOFER, VIATICO, FLOTA, DATA DA VIAGEM, ORIGEM IDA, DESTINO IDA
+      // RV CHOFER, VIATICO, FLOTA, DATA DA VIAGEM, ORIGEM IDA, DESTINO IDA, DT
       const rv      = parseFloat(String(v['RV CHOFER'] || v['RV GENERAL'] || 0).replace(',','.')) || 0;
       const viatico = parseFloat(String(v['VIATICO'] || v['VIÁTICO'] || v['VIATICOS'] || 0).replace(',','.')) || 0;
       const fecha   = parsearFecha(v['DATA DA VIAGEM'] || v['DATA VIAGEM'] || v['data'] || '');
       const origen  = String(v['ORIGEM IDA'] || v['ORIGEM'] || '—');
       const destino = String(v['DESTINO IDA'] || v['DESTINO'] || '—');
-      const movil   = String(v['FLOTA'] || v['CAVALO'] || v['PLACA'] || '—');
+      // Móvil: FLOTA tiene el número (730, 731, etc.)
+      // CAVALO tiene el número del camión (puede ser 0)
+      const _flota  = v['FLOTA'];
+      const _cavalo = v['CAVALO'];
+      // Preferir CAVALO si es >0, sino usar FLOTA directamente
+      const movil = (_cavalo && Number(_cavalo) > 0)
+        ? String(_cavalo)
+        : (_flota !== undefined && _flota !== null && _flota !== '')
+          ? String(_flota)
+          : '—';
+      const dt      = v['DT'] !== undefined && v['DT'] !== '' ? String(v['DT']) : '—';
 
       totalRV       += rv;
       totalViaticos += viatico;
-      return { rv, viatico, fecha, origen, destino, movil };
+      return { rv, viatico, fecha, origen, destino, movil, dt };
     }).sort((a,b) => b.fecha.localeCompare(a.fecha)); // más reciente primero
 
     _rvData = { ci, nome: currentUser.nombre||'', viajes: filas, totalRV, totalViaticos };
@@ -653,6 +673,7 @@ window.abrirModalRV = async function(){
             <tr style="border-bottom:1px solid rgba(255,255,255,.12)">
               <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;white-space:nowrap;font-size:11px">Fecha</th>
               <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Móvil</th>
+              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">DT</th>
               <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Origen</th>
               <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Destino</th>
               <th style="padding:7px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:11px">RV</th>
@@ -664,6 +685,7 @@ window.abrirModalRV = async function(){
               <tr style="border-bottom:1px solid rgba(255,255,255,.04);${i%2===0?'background:rgba(255,255,255,.02)':''}">
                 <td style="padding:7px 5px;white-space:nowrap;font-family:'Courier New',monospace;font-size:11px;color:var(--text2)">${f.fecha}</td>
                 <td style="padding:7px 5px;font-size:11px;white-space:nowrap;color:var(--text2)">${f.movil}</td>
+                <td style="padding:7px 5px;font-size:10px;white-space:nowrap;color:var(--text3);font-family:'Courier New',monospace">${f.dt}</td>
                 <td style="padding:7px 5px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${f.origen}</td>
                 <td style="padding:7px 5px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${f.destino}</td>
                 <td style="padding:7px 5px;text-align:right;font-weight:700;color:var(--accent);font-family:'Courier New',monospace;font-size:11px">${fmtNum(f.rv)}</td>
@@ -672,7 +694,7 @@ window.abrirModalRV = async function(){
           </tbody>
           <tfoot>
             <tr style="border-top:2px solid rgba(255,255,255,.15);background:rgba(79,126,255,.08)">
-              <td colspan="4" style="padding:9px 5px;font-weight:700;font-size:12px">TOTAL</td>
+              <td colspan="5" style="padding:9px 5px;font-weight:700;font-size:12px">TOTAL</td>
               <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--accent);font-family:'Courier New',monospace;font-size:12px">${fmtNum(totalRV)}</td>
               <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--green);font-family:'Courier New',monospace;font-size:12px">${fmtNum(totalViaticos)}</td>
             </tr>
@@ -719,9 +741,9 @@ window.generarPDFRV = function(){
     <div class="kpi"><div class="kpi-l">Viajes</div><div class="kpi-v">${d.viajes.length}</div></div>
   </div>
   <table>
-    <thead><tr><th>Fecha</th><th>Móvil</th><th>Origen</th><th>Destino</th><th style="text-align:right">RV</th><th style="text-align:right">Viático</th></tr></thead>
-    <tbody>${d.viajes.map(v=>`<tr><td>${v.fecha}</td><td>${v.movil}</td><td>${v.origen}</td><td>${v.destino}</td><td style="text-align:right;font-family:monospace">${fmtNum(v.rv)}</td><td style="text-align:right;font-family:monospace">${fmtNum(v.viatico)}</td></tr>`).join('')}</tbody>
-    <tfoot><tr><td colspan="4">TOTAL</td><td style="text-align:right;font-family:monospace">G ${fmtNum(d.totalRV)}</td><td style="text-align:right;font-family:monospace">G ${fmtNum(d.totalViaticos)}</td></tr></tfoot>
+    <thead><tr><th>Fecha</th><th>Móvil</th><th>DT</th><th>Origen</th><th>Destino</th><th style="text-align:right">RV</th><th style="text-align:right">Viático</th></tr></thead>
+    <tbody>${d.viajes.map(v=>`<tr><td>${v.fecha}</td><td>${v.movil}</td><td>${v.dt}</td><td>${v.origen}</td><td>${v.destino}</td><td style="text-align:right;font-family:monospace">${fmtNum(v.rv)}</td><td style="text-align:right;font-family:monospace">${fmtNum(v.viatico)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="5">TOTAL</td><td style="text-align:right;font-family:monospace">G ${fmtNum(d.totalRV)}</td><td style="text-align:right;font-family:monospace">G ${fmtNum(d.totalViaticos)}</td></tr></tfoot>
   </table>
   <scr` + `ipt>window.onload=()=>window.print();</scr` + `ipt>
   </body></html>`;
@@ -1482,3 +1504,4 @@ showScreen('login');
 </script>
 </body>
 </html>
+
