@@ -1,303 +1,1482 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>FADEL T1 PY - CONSULTA DE VIAJES</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 10px;
-      text-align: center;
-      background-color: #fafafa;
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 5px 0;
-      width: 100%;
-      max-width: 300px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      font-size: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th {
-      background-color: #002060;
-      color: white;
-      font-weight: bold;
-      padding: 10px;
-    }
-    th:last-child {
-      background-color: #C00000;
-    }
-    td {
-      padding: 8px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    tr:hover {
-      background-color: #f0f8ff;
-    }
-    .total-row {
-      font-weight: bold;
-      background-color: #e8eefc;
-      color: #002060;
-    }
-    footer {
-      text-align: center;
-      padding: 10px;
-      background-color: #002060;
-      color: white;
-      font-weight: bold;
-      margin-top: 30px;
-      border-radius: 6px;
-    }
-    /* Encabezado */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #f0f0f0;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    /* Botón de Filtrar */
-    #btnFiltrar {
-      display: block;
-      margin: 15px auto;
-      background-color: #002060;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    #btnFiltrar:hover {
-      background-color: #004080;
-    }
-    /* Indicador de carga */
-    #loading {
-      display: none;
-      font-weight: bold;
-      color: #002060;
-      margin-top: 15px;
-    }
-    /* Ajuste para móviles */
-    @media (max-width: 768px) {
-      body {
-        font-size: 16px;
-        padding: 8px;
-      }
-      table {
-        font-size: 13px;
-        width: 100%;
-        overflow-x: auto;
-        display: block;
-      }
-      th, td {
-        padding: 6px;
-      }
-      .whatsapp-btn {
-        bottom: 10px;
-        right: 10px;
-        font-size: 16px;
-        padding: 10px 12px;
-      }
-    }
-    /* Botón flotante de WhatsApp */
-    .whatsapp-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25D366;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 12px 15px;
-      border-radius: 50px;
-      box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Control de Jornada</title>
+<style>
+:root{
+  --bg:#0f1117;
+  --bg2:#1a1d27;
+  --bg3:#232736;
+  --bg4:#2d3145;
+  --accent:#4f7eff;
+  --accent2:#3d63cc;
+  --green:#22c55e;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --purple:#a78bfa;
+  --text:#e8eaf0;
+  --text2:#9ca3b0;
+  --text3:#6b7280;
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --radius:16px;
+  --radius-sm:10px;
+}
+/* ── LIGHT MODE ──────────────────────────────────────────────── */
+body.light-mode{
+  --bg:#f4f5f7;
+  --bg2:#ffffff;
+  --bg3:#f0f1f3;
+  --bg4:#e4e6ea;
+  --accent:#2563eb;
+  --accent2:#1d4ed8;
+  --green:#16a34a;
+  --amber:#d97706;
+  --red:#dc2626;
+  --purple:#7c3aed;
+  --text:#111318;
+  --text2:#374151;
+  --text3:#6b7280;
+  --border:rgba(0,0,0,.08);
+  --border2:rgba(0,0,0,.14);
+}
+body.light-mode input,body.light-mode select{
+  background:var(--bg3);color:var(--text);border-color:var(--border2);
+}
+/* Botón theme toggle */
+.theme-toggle{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);
+  background:var(--bg3);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:17px;transition:all .2s;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.theme-toggle:active{transform:scale(.9)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.5;overscroll-behavior:none}
+.screen{display:none;min-height:100vh;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,80px)}
+.screen.active{display:block}
+
+/* ── BOTONES ─────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;transition:all .18s;width:100%;outline:none;letter-spacing:.01em}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:active{background:var(--accent2)}
+.btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:active{background:var(--bg4)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-sm{padding:8px 14px;font-size:13px;width:auto;font-weight:500;border-radius:8px}
+
+/* ── INPUTS ─────────────────────────────────────────────── */
+input,select{width:100%;padding:14px 16px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:15px;margin-bottom:12px;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--text3)}
+label{font-size:13px;color:var(--text2);margin-bottom:5px;display:block;font-weight:500}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+
+/* ── CARDS ──────────────────────────────────────────────── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:.875rem}
+
+/* ── LOGIN ──────────────────────────────────────────────── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.login-box{width:100%;max-width:380px}
+.login-logo{text-align:center;margin-bottom:2rem}
+.login-logo .bus{font-size:52px;margin-bottom:.5rem;display:block}
+.login-logo h1{font-size:22px;font-weight:700;color:var(--text)}
+.login-logo p{font-size:13px;color:var(--text3);margin-top:4px}
+.login-box .card{padding:1.75rem}
+.login-box .btn-primary{margin-top:4px}
+
+/* ── HEADER APP ─────────────────────────────────────────── */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1rem .5rem;gap:.75rem;position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
+.app-header-left{min-width:0}
+.app-header-left .greeting{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.app-header-left .name{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-header-left .sub{font-size:12px;color:var(--text3);margin-top:1px}
+.app-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+
+/* ── BADGES ─────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.01em}
+.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-blue{background:rgba(79,126,255,.15);color:var(--accent)}
+.badge-gray{background:var(--bg3);color:var(--text3)}
+.badge-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ── CONTENIDO PRINCIPAL ────────────────────────────────── */
+.app-body{padding:.875rem 1rem;max-width:540px;margin:0 auto}
+
+/* ── STAT CARDS ─────────────────────────────────────────── */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.875rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
+.stat-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.stat-val{font-size:26px;font-weight:700;font-family:'Courier New',monospace;letter-spacing:.02em;line-height:1}
+.stat-val.green{color:var(--green)}
+.stat-val.amber{color:var(--amber)}
+.stat-val.red{color:var(--red)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:.4rem}
+.prog{background:var(--bg4);border-radius:20px;height:5px;overflow:hidden;margin-top:.6rem}
+.prog-fill{height:100%;border-radius:20px;transition:width .6s ease,background .4s}
+
+/* ── INTERJORNADA CARD ──────────────────────────────────── */
+.interjornada-card{background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,126,255,.08));border:1px solid rgba(167,139,250,.2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:.875rem;display:flex;align-items:center;gap:12px}
+.interjornada-icon{font-size:28px;flex-shrink:0}
+.interjornada-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:2px}
+.interjornada-val{font-size:20px;font-weight:700;font-family:'Courier New',monospace;color:var(--purple)}
+.interjornada-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ── ALERTAS ────────────────────────────────────────────── */
+.alert{padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:.75rem;display:flex;align-items:flex-start;gap:8px;line-height:1.45}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.alert-green{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.alert-amber{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fcd34d}
+.alert-red{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-blue{background:rgba(79,126,255,.08);border:1px solid rgba(79,126,255,.2);color:#93b4ff}
+.alert-gray{background:var(--bg3);border:1px solid var(--border2);color:var(--text3)}
+
+/* ── MACROS ─────────────────────────────────────────────── */
+.macros-section{margin-bottom:.875rem}
+.macros-section-title{font-size:12px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;padding:0 2px}
+.macro-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.625rem}
+.macro-btn{display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .18s;text-align:left;position:relative;overflow:hidden}
+.macro-btn:active{transform:scale(.97);background:var(--bg3)}
+.macro-btn.disabled-macro{opacity:.3;pointer-events:none}
+.macro-icon-wrap{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.macro-icon-wrap.blue{background:rgba(79,126,255,.15)}
+.macro-icon-wrap.green{background:rgba(34,197,94,.15)}
+.macro-icon-wrap.amber{background:rgba(245,158,11,.15)}
+.macro-icon-wrap.purple{background:rgba(167,139,250,.15)}
+.macro-icon-wrap.teal{background:rgba(20,184,166,.15)}
+.macro-text .macro-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.25}
+.macro-text .macro-desc{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.3}
+.macro-btn-fin{grid-column:span 2;background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.2)}
+.macro-btn-fin .macro-icon-wrap{background:rgba(239,68,68,.15)}
+.macro-btn-fin .macro-name{color:var(--red)}
+.macro-btn-fin:active{background:rgba(239,68,68,.12)}
+
+/* ── TIMELINE ───────────────────────────────────────────── */
+/* El timeline usa inline styles directamente para máxima flexibilidad en móvil */
+/* Solo mantenemos una clase helper para el tap feedback */
+.tl-gps:active{opacity:.6}
+
+/* ── MODAL ──────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
+.modal-box{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;border:1px solid var(--border2);padding:1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom,0px));width:100%;max-width:520px;max-height:80vh;overflow-y:auto}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 1.25rem}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:.25rem}
+.modal-sub{font-size:13px;color:var(--text3);margin-bottom:1.25rem}
+.modal-actions{display:flex;gap:.625rem;margin-top:1rem}
+
+/* ── MAPA INFO ──────────────────────────────────────────── */
+.mapa-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.mapa-row:last-child{border-bottom:none}
+.mapa-row-label{font-size:13px;color:var(--text3);font-weight:500}
+.mapa-row-val{font-size:13px;color:var(--text);font-family:'Courier New',monospace}
+
+/* ── LOADING ────────────────────────────────────────────── */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid var(--bg3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.loading-text{font-size:14px;color:var(--text3)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── MODAL INTERJORNADA ─────────────────────────────────── */
+.ij-highlight{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:var(--radius-sm);padding:1rem;text-align:center;margin-bottom:1rem}
+.ij-highlight .val{font-size:36px;font-weight:700;font-family:'Courier New',monospace;color:var(--purple)}
+.ij-highlight .label{font-size:12px;color:var(--text3);margin-top:4px}
+
+.mono{font-family:'Courier New',monospace}
+</style>
 </head>
 <body>
-  
-  <!-- Encabezado -->
-  <div class="header">
-    <h1>FADEL T1 PY - CONSULTA DE VIAJES</h1>
+
+<!-- LOADING -->
+<div id="loading-overlay" class="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-msg">Conectando...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-logo">
+        <span class="bus">🚌</span>
+        <h1>Control de Jornada</h1>
+        <p>Transportes SA</p>
+      </div>
+      <div class="card">
+        <label>Usuario</label>
+        <input type="text" id="login-user" placeholder="Tu usuario" autocomplete="username"
+          onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()"/>
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+        <div id="login-error" style="display:none" class="alert alert-red">
+          <span class="alert-icon">⚠</span><span id="login-error-msg"></span>
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()">Ingresar</button>
+      </div>
+    </div>
   </div>
-  
-  <!-- Filtro de búsqueda -->
-  <label for="ciInput">Ingrese CI:</label>
-  <input type="text" id="ciInput" placeholder="Ej: 7097243">
+</div>
 
-  <label for="fechaViaje">Fecha de Viaje:</label>
-  <input type="date" id="fechaViaje">
+<!-- PANEL CHOFER -->
+<div id="screen-chofer" class="screen">
 
-  <button id="btnFiltrar">Ver Viajes</button>
+  <!-- Header sticky -->
+  <div class="app-header">
+    <div class="app-header-left">
+      <div class="greeting">Bienvenido/a</div>
+      <div class="name" id="chofer-nombre">—</div>
+      <div class="sub" id="chofer-sub">—</div>
+    </div>
+    <div class="app-header-right">
+      <span id="chofer-movil-badge" class="badge badge-blue" style="display:none"></span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Cambiar tema"><span id="theme-icon" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;stroke:currentColor"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span></button>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()">Salir</button>
+      </div>
+    </div>
+  </div>
 
-  <div id="loading">⏳ Cargando datos...</div>
+  <div class="app-body">
 
-  <!-- Contenedor para mostrar la tabla -->
-  <div id="resultado"></div>
-  
-  <script>
-    async function obtenerViajesDesdeFirebase() {
-      const resultadoDiv = document.getElementById("resultado");
-      const loadingDiv = document.getElementById("loading");
-      resultadoDiv.innerHTML = "";
-      loadingDiv.style.display = "block";
+    <!-- Interjornada (visible solo si no hay jornada activa y hubo una anterior) -->
+    <div id="interjornada-card" style="display:none" class="interjornada-card">
+      <div class="interjornada-icon">⏱</div>
+      <div style="flex:1;min-width:0">
+        <div class="interjornada-label">Interjornada actual</div>
+        <div class="interjornada-val" id="interjornada-val">00:00:00</div>
+        <div class="interjornada-sub" id="interjornada-sub">Mínimo reglamentario: 12:00:00</div>
+        <div style="background:rgba(255,255,255,.08);border-radius:20px;height:4px;overflow:hidden;margin-top:8px">
+          <div id="interjornada-prog" style="height:100%;border-radius:20px;transition:width .6s,background .4s;width:0%"></div>
+        </div>
+      </div>
+    </div>
 
-      const url = "https://toten-paraguay-5d90f-default-rtdb.firebaseio.com/.json";
-      try {
-        const respuesta = await fetch(url);
-        if (!respuesta.ok) throw new Error("No se pudo cargar los datos de Firebase");
-  
-        const datos = await respuesta.json();
-        loadingDiv.style.display = "none";
+    <!-- Stats -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-label">Tiempo en jornada</div>
+        <div class="stat-val" id="stat-jornada">00:00:00</div>
+        <div class="prog"><div class="prog-fill" id="prog-jornada" style="width:0%;background:var(--accent)"></div></div>
+        <div class="stat-sub">Ref. máx: 10:00:00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Consumisión</div>
+        <div class="stat-val green" id="stat-consumision">00:00:00</div>
+        <div class="prog"><div class="prog-fill" id="prog-consumision" style="width:0%;background:var(--green)"></div></div>
+        <div class="stat-sub">Máx: 01:00:00 · 2 cortes</div>
+      </div>
+    </div>
 
-        if (!datos || Object.keys(datos).length === 0) {
-          resultadoDiv.innerHTML = "<p>No se encontraron viajes.</p>";
-          return;
+    <!-- Alertas -->
+    <div id="banner-estado" style="display:none" class="alert alert-blue">
+      <span class="alert-icon">●</span><span id="banner-texto"></span>
+    </div>
+    <div id="alerta-consumision-activa" style="display:none" class="alert alert-amber">
+      <span class="alert-icon">☕</span>
+      <span>Consumisión en curso: <strong class="mono" id="consumicion-timer">00:00:00</strong> — finalizará al marcar Llegada a fábrica</span>
+    </div>
+    <div id="alerta-consumision-max" style="display:none" class="alert alert-red">
+      <span class="alert-icon">⛔</span><span>Superaste el límite de 01:00:00 de consumisión</span>
+    </div>
+    <div id="alerta-4h" style="display:none" class="alert alert-green">
+      <span class="alert-icon">✔</span><span>Más de 04:00:00 en jornada — ya podés marcar consumisión</span>
+    </div>
+
+    <!-- Macros -->
+    <div class="macros-section">
+      <div class="macros-section-title">Marcaciones</div>
+      <div class="macro-grid">
+
+        <div class="macro-btn" id="mac-inicio" onclick="triggerMacro('inicio')">
+          <div class="macro-icon-wrap green"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;stroke:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span></div>
+          <div class="macro-text">
+            <div class="macro-name">Inicio de jornada</div>
+            <div class="macro-desc">Comenzar turno</div>
+          </div>
+        </div>
+
+        <div class="macro-btn" id="mac-llegada" onclick="triggerMacro('llegada')">
+          <div class="macro-icon-wrap blue"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;stroke:var(--accent)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></span></div>
+          <div class="macro-text">
+            <div class="macro-name">Llegada a fábrica</div>
+            <div class="macro-desc">Registrar arribo</div>
+          </div>
+        </div>
+
+        <div class="macro-btn" id="mac-consumision" onclick="triggerMacro('consumision')">
+          <div class="macro-icon-wrap amber"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;stroke:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg></span></div>
+          <div class="macro-text">
+            <div class="macro-name">Inicio consumisión</div>
+            <div class="macro-desc">Desde 4 hs de jornada</div>
+          </div>
+        </div>
+
+        <div class="macro-btn" id="mac-reinicio" onclick="triggerMacro('reinicio')">
+          <div class="macro-icon-wrap teal"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;stroke:#14b8a6"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span></div>
+          <div class="macro-text">
+            <div class="macro-name">Reinicio de viaje</div>
+            <div class="macro-desc">Nuevo recorrido</div>
+          </div>
+        </div>
+
+        <div class="macro-btn" id="mac-cambio" onclick="triggerMacro('cambio')">
+          <div class="macro-icon-wrap purple"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;stroke:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21a8 8 0 0 1 10.434-7.62"/><circle cx="10" cy="8" r="5"/><circle cx="18" cy="18" r="3"/><path d="m19.5 14.3-.4 1"/><path d="m16.9 16.9-1-.4"/><path d="m14.3 19.5 1-.4"/><path d="m16.9 19.1-1 .4"/><path d="m19.5 21.7-.4-1"/><path d="m21.7 19.5-1 .4"/><path d="m21.1 16.9.4-1"/><path d="m18.5 16.3 1 .4"/></svg></span></div>
+          <div class="macro-text">
+            <div class="macro-name">Cambio de conductor</div>
+            <div class="macro-desc">Relevo de chofer</div>
+          </div>
+        </div>
+
+        <!-- Fin — ancho completo -->
+        <div class="macro-btn macro-btn-fin" id="mac-fin" onclick="triggerMacro('fin')">
+          <div class="macro-icon-wrap" style="background:rgba(239,68,68,.15)"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;stroke:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/></svg></span></div>
+          <div class="macro-text">
+            <div class="macro-name">Fin de jornada</div>
+            <div class="macro-desc">Cerrar turno actual</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Botón Mi RV -->
+    <button onclick="window.abrirModalRV()" style="
+      width:100%;padding:16px;border:none;border-radius:var(--radius);
+      background:linear-gradient(135deg,rgba(79,126,255,.15),rgba(167,139,250,.15));
+      border:1px solid rgba(79,126,255,.25);
+      color:var(--text);font-size:15px;font-weight:700;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      margin-bottom:.875rem;-webkit-tap-highlight-color:transparent;
+      transition:all .18s">
+      <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;stroke:var(--accent);flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg></span>
+      <div style="text-align:left">
+        <div>Ver mi RV del corte actual</div>
+        <div style="font-size:11px;font-weight:400;color:var(--text3);margin-top:1px">Rendimiento de viaje · viáticos · detalle</div>
+      </div>
+      <span style="margin-left:auto;font-size:18px;color:var(--accent)">›</span>
+    </button>
+
+    <!-- Timeline -->
+    <div class="card" style="padding:1.25rem 1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <span style="font-size:13px;font-weight:600;color:var(--text2)">Todas mis marcaciones</span>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Historial completo con fecha y hora</div>
+        </div>
+        <span id="tl-count" class="badge badge-gray" style="font-size:11px">0</span>
+      </div>
+      <div id="timeline-chofer">
+        <div style="text-align:center;padding:2rem 0;color:var(--text3);font-size:13px">Sin registros aún</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL MI RV -->
+<div id="modal-rv" style="display:none" class="modal-overlay" onclick="if(event.target===this)cerrarModalRV()">
+  <div class="modal-box" style="max-height:90vh;overflow-y:auto;padding-bottom:calc(1.5rem + env(safe-area-inset-bottom,0px))">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <div>
+        <div class="modal-title" style="margin-bottom:2px;display:flex;align-items:center;gap:8px"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;stroke:var(--accent)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg></span>Mi RV — Corte actual</div>
+        <div id="rv-nombre-label" style="font-size:12px;color:var(--text3)">Cargando...</div>
+      </div>
+      <button onclick="cerrarModalRV()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px">✕</button>
+    </div>
+
+    <!-- KPIs -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem" id="rv-kpis">
+      <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">RV Acumulado</div>
+        <div style="font-size:28px;font-weight:800;font-family:'Courier New',monospace;color:var(--accent)" id="rv-total">—</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Viáticos</div>
+        <div style="font-size:28px;font-weight:800;font-family:'Courier New',monospace;color:var(--green)" id="rv-viaticos">—</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Viajes</div>
+        <div style="font-size:28px;font-weight:800;font-family:'Courier New',monospace" id="rv-viajes">—</div>
+      </div>
+    </div>
+
+    <!-- Tabla de viajes -->
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Detalle de viajes</div>
+    <div id="rv-tabla" style="font-size:13px">
+      <div style="text-align:center;padding:2rem;color:var(--text3)">Cargando datos...</div>
+    </div>
+
+    <!-- Acciones -->
+    <div style="margin-top:1.25rem">
+      <button onclick="generarPDFRV()" style="width:100%;padding:14px;border:none;border-radius:var(--radius-sm);
+        background:rgba(79,126,255,.18);color:var(--accent);font-weight:700;font-size:14px;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;gap:8px;
+        -webkit-tap-highlight-color:transparent">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;stroke:currentColor"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect width="12" height="8" x="6" y="14" rx="1"/></svg></span> Generar PDF
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SELECCIÓN MÓVIL -->
+<div id="modal-movil" style="display:none" class="modal-overlay" onclick="if(event.target===this)closeMovilModal()">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Seleccionar móvil</div>
+    <div class="modal-sub">Indicá el vehículo para esta marcación</div>
+    <label>Vehículo asignado</label>
+    <select id="select-movil">
+      <option value="TALLER">🔧 TALLER</option>
+      <option value="730">Móvil 730</option><option value="731">Móvil 731</option><option value="732">Móvil 732</option>
+      <option value="733">Móvil 733</option><option value="734">Móvil 734</option><option value="735">Móvil 735</option>
+      <option value="736">Móvil 736</option><option value="737">Móvil 737</option><option value="738">Móvil 738</option>
+      <option value="739">Móvil 739</option><option value="740">Móvil 740</option><option value="741">Móvil 741</option>
+      <option value="742">Móvil 742</option><option value="743">Móvil 743</option><option value="744">Móvil 744</option>
+      <option value="745">Móvil 745</option><option value="746">Móvil 746</option><option value="747">Móvil 747</option>
+      <option value="748">Móvil 748</option><option value="749">Móvil 749</option><option value="750">Móvil 750</option>
+      <option value="751">Móvil 751</option><option value="752">Móvil 752</option><option value="753">Móvil 753</option>
+      <option value="754">Móvil 754</option><option value="755">Móvil 755</option><option value="756">Móvil 756</option>
+      <option value="757">Móvil 757</option><option value="758">Móvil 758</option><option value="759">Móvil 759</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeMovilModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmMovil()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INTERJORNADA (antes de iniciar nueva jornada) -->
+<div id="modal-interjornada" style="display:none" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nueva jornada</div>
+    <div class="modal-sub">Tu interjornada antes de comenzar</div>
+    <div class="ij-highlight">
+      <div class="val" id="modal-ij-val">00:00:00</div>
+      <div class="label">Tiempo desde el fin de tu última jornada</div>
+    </div>
+    <div id="modal-ij-alerta" style="display:none" class="alert alert-amber">
+      <span class="alert-icon">⚠</span>
+      <span id="modal-ij-alerta-txt"></span>
+    </div>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:1.25rem">¿Querés continuar e iniciar una nueva jornada?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cancelarInicioJornada()">Cancelar</button>
+      <button class="btn btn-primary" onclick="continuarInicioJornada()">Sí, iniciar jornada</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MAPA -->
+<div id="modal-mapa" style="display:none" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-mapa-title">📍 Ubicación</div>
+    <div id="modal-mapa-body"></div>
+    <button class="btn btn-ghost" style="margin-top:1rem"
+      onclick="document.getElementById('modal-mapa').style.display='none'">Cerrar</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, doc,
+  getDoc, getDocs, setDoc, addDoc,
+  query, where, orderBy, limit,
+  onSnapshot, Timestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyDXH6pYCZFp9Gy3-yqGvuNEQrKZY7wNvb4",
+  authDomain:        "viajesflota-70383.firebaseapp.com",
+  projectId:         "viajesflota-70383",
+  storageBucket:     "viajesflota-70383.firebasestorage.app",
+  messagingSenderId: "670149535521",
+  appId:             "1:670149535521:web:cc59294f0c8437e772c060",
+  measurementId:     "G-PXET29YVZG"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db    = getFirestore(fbApp);
+
+// ── Estado ──────────────────────────────────────────────────────
+let currentUser    = null;
+let pendingMacro   = null;
+let pendingMovil   = null;
+let tickInterval   = null;
+let jornadaData    = null;   // doc de jornada de HOY (puede tener múltiples jornadas)
+let ultimaJornada  = null;   // última jornada finalizada (para interjornada)
+let unsubJornada   = null;
+let unsubRegistros = null;
+
+// ── Helpers ─────────────────────────────────────────────────────
+const pad = n => String(n).padStart(2,'0');
+function hhmmss(ms) {
+  if (!ms || ms <= 0) return '00:00:00';
+  const s = Math.floor(ms / 1000);
+  return pad(Math.floor(s/3600)) + ':' + pad(Math.floor((s%3600)/60)) + ':' + pad(s%60);
+}
+function tsToMs(f) {
+  if (!f) return null;
+  if (typeof f.toDate === 'function') return f.toDate().getTime();
+  if (f.seconds !== undefined) return f.seconds * 1000 + Math.floor((f.nanoseconds || 0) / 1e6);
+  if (typeof f === 'number') return f;
+  return null;
+}
+function fmtHora(ts) {
+  if (!ts) return '--:--:--';
+  const d = ts instanceof Timestamp ? ts.toDate() : new Date(ts);
+  return d.toTimeString().slice(0,8);
+}
+function todayKey() { return new Date().toISOString().slice(0,10); }
+
+// El doc de jornada ahora es: jornadas/{username_YYYY-MM-DD}
+// Dentro tiene un array "jornadas" con cada turno del día
+// y "movilActual" para el badge del header.
+function jornadaDocId(u) { return u + '_' + todayKey(); }
+
+// ══════════════════════════════════════════════════════════════
+// MI RV — Consulta Firebase toten-paraguay-5d90f
+// ══════════════════════════════════════════════════════════════
+const RV_FIREBASE_URL = 'https://toten-paraguay-5d90f-default-rtdb.firebaseio.com';
+let _rvData = null;
+
+// Busca un campo en un objeto sin importar mayúsculas ni espacios
+function campoRV(obj, ...claves) {
+  for(const c of claves){
+    for(const k of Object.keys(obj)){
+      if(k.trim().toLowerCase() === c.trim().toLowerCase() && obj[k] !== '' && obj[k] != null)
+        return obj[k];
+    }
+  }
+  return null;
+}
+
+function fmtNum(n){ return Number(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+function parsearFecha(raw){
+  if(!raw) return '—';
+  const s = String(raw).trim();
+  const p = s.split(/[-\/]/);
+  if(p.length >= 3){
+    if(p[0].length === 4) return p[2].padStart(2,'0') + '/' + p[1].padStart(2,'0'); // YYYY-MM-DD
+    return p[0].padStart(2,'0') + '/' + p[1].padStart(2,'0'); // DD/MM/YYYY
+  }
+  return s.slice(0,5);
+}
+
+window.abrirModalRV = async function(){
+  document.getElementById('modal-rv').style.display = 'flex';
+  if(!currentUser) return;
+
+  const ci = String(currentUser.dni || '').trim();
+  if(!ci){
+    document.getElementById('rv-tabla').innerHTML =
+      '<div style="text-align:center;padding:2rem;color:var(--text3)">Sin CI en tu perfil. Contactá al supervisor.</div>';
+    return;
+  }
+
+  document.getElementById('rv-nombre-label').textContent = (currentUser.nombre||'') + ' · CI: ' + ci;
+  document.getElementById('rv-total').textContent    = '—';
+  document.getElementById('rv-viaticos').textContent = '—';
+  document.getElementById('rv-viajes').textContent   = '—';
+  document.getElementById('rv-tabla').innerHTML =
+    '<div style="text-align:center;padding:2rem;color:var(--text3)">⏳ Cargando...</div>';
+
+  try{
+    const resp = await fetch(RV_FIREBASE_URL + '/.json');
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const all = await resp.json();
+
+    if(!all || typeof all !== 'object') throw new Error('Datos vacíos');
+
+    // Filtrar por CI
+    const viajes = Object.values(all).filter(v => {
+      if(!v || typeof v !== 'object') return false;
+      const ciReg = String(v.CI || v.ci || v.LOGIN || v.login || '').trim();
+      return ciReg === ci;
+    });
+
+    // Log para diagnóstico — ver campos reales
+    // campos confirmados — sin diagnóstico
+
+    if(!viajes.length){
+      document.getElementById('rv-tabla').innerHTML =
+        '<div style="text-align:center;padding:2rem;color:var(--text3)">Sin viajes en el corte actual para CI ' + ci + '</div>';
+      _rvData = { ci, nombre: currentUser.nombre||'', viajes:[], totalRV:0, totalViaticos:0 };
+      document.getElementById('rv-total').textContent    = 'G 0';
+      document.getElementById('rv-viaticos').textContent = 'G 0';
+      document.getElementById('rv-viajes').textContent   = '0';
+      return;
+    }
+
+    let totalRV = 0, totalViaticos = 0;
+
+    const filas = viajes.map(v => {
+      // RV — buscar todas las variantes posibles del campo
+      // Campos confirmados desde Firebase real:
+      // RV CHOFER, VIATICO, FLOTA, DATA DA VIAGEM, ORIGEM IDA, DESTINO IDA
+      const rv      = parseFloat(String(v['RV CHOFER'] || v['RV GENERAL'] || 0).replace(',','.')) || 0;
+      const viatico = parseFloat(String(v['VIATICO'] || v['VIÁTICO'] || v['VIATICOS'] || 0).replace(',','.')) || 0;
+      const fecha   = parsearFecha(v['DATA DA VIAGEM'] || v['DATA VIAGEM'] || v['data'] || '');
+      const origen  = String(v['ORIGEM IDA'] || v['ORIGEM'] || '—');
+      const destino = String(v['DESTINO IDA'] || v['DESTINO'] || '—');
+      const movil   = String(v['FLOTA'] || v['CAVALO'] || v['PLACA'] || '—');
+
+      totalRV       += rv;
+      totalViaticos += viatico;
+      return { rv, viatico, fecha, origen, destino, movil };
+    }).sort((a,b) => b.fecha.localeCompare(a.fecha)); // más reciente primero
+
+    _rvData = { ci, nome: currentUser.nombre||'', viajes: filas, totalRV, totalViaticos };
+
+    // KPIs
+    document.getElementById('rv-total').textContent    = 'G ' + fmtNum(totalRV);
+    document.getElementById('rv-viaticos').textContent = 'G ' + fmtNum(totalViaticos);
+    document.getElementById('rv-viajes').textContent   = filas.length;
+
+    // Tabla
+    document.getElementById('rv-tabla').innerHTML = `
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:360px">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.12)">
+              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;white-space:nowrap;font-size:11px">Fecha</th>
+              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Móvil</th>
+              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Origen</th>
+              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Destino</th>
+              <th style="padding:7px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:11px">RV</th>
+              <th style="padding:7px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:11px">Viático</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filas.map((f,i) => `
+              <tr style="border-bottom:1px solid rgba(255,255,255,.04);${i%2===0?'background:rgba(255,255,255,.02)':''}">
+                <td style="padding:7px 5px;white-space:nowrap;font-family:'Courier New',monospace;font-size:11px;color:var(--text2)">${f.fecha}</td>
+                <td style="padding:7px 5px;font-size:11px;white-space:nowrap;color:var(--text2)">${f.movil}</td>
+                <td style="padding:7px 5px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${f.origen}</td>
+                <td style="padding:7px 5px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${f.destino}</td>
+                <td style="padding:7px 5px;text-align:right;font-weight:700;color:var(--accent);font-family:'Courier New',monospace;font-size:11px">${fmtNum(f.rv)}</td>
+                <td style="padding:7px 5px;text-align:right;color:var(--green);font-family:'Courier New',monospace;font-size:11px">${fmtNum(f.viatico)}</td>
+              </tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr style="border-top:2px solid rgba(255,255,255,.15);background:rgba(79,126,255,.08)">
+              <td colspan="4" style="padding:9px 5px;font-weight:700;font-size:12px">TOTAL</td>
+              <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--accent);font-family:'Courier New',monospace;font-size:12px">${fmtNum(totalRV)}</td>
+              <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--green);font-family:'Courier New',monospace;font-size:12px">${fmtNum(totalViaticos)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>`;
+
+  }catch(e){
+    console.error('[RV Error]', e);
+    document.getElementById('rv-tabla').innerHTML =
+      `<div style="text-align:center;padding:1.5rem;color:var(--red)">Error: ${e.message}</div>`;
+  }
+};
+
+window.cerrarModalRV = function(){
+  document.getElementById('modal-rv').style.display = 'none';
+};
+
+window.generarPDFRV = function(){
+  if(!_rvData || !_rvData.viajes.length){ alert('Sin datos para exportar'); return; }
+  const d = _rvData;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>RV - ${d.nome}</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:24px;color:#111;font-size:12px}
+    h2{font-size:16px;margin-bottom:2px}
+    .sub{color:#666;font-size:11px;margin-bottom:20px}
+    .kpis{display:flex;gap:12px;margin-bottom:20px}
+    .kpi{border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;flex:1;text-align:center}
+    .kpi-l{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+    .kpi-v{font-size:18px;font-weight:700;font-family:monospace}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    th{background:#f3f4f6;padding:7px;text-align:left;font-weight:600;border-bottom:2px solid #d1d5db}
+    td{padding:6px 7px;border-bottom:1px solid #e5e7eb}
+    tr:nth-child(even)td{background:#fafafa}
+    tfoot td{font-weight:700;background:#eff6ff;border-top:2px solid #93c5fd}
+    @media print{body{padding:10px}}
+  </style></head><body>
+  <h2>Mi RV — Corte Actual</h2>
+  <div class="sub">${d.nome} · CI: ${d.ci} · ${new Date().toLocaleDateString('es-PY')}</div>
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-l">RV Total</div><div class="kpi-v" style="color:#2563eb">G ${fmtNum(d.totalRV)}</div></div>
+    <div class="kpi"><div class="kpi-l">Viáticos</div><div class="kpi-v" style="color:#16a34a">G ${fmtNum(d.totalViaticos)}</div></div>
+    <div class="kpi"><div class="kpi-l">Viajes</div><div class="kpi-v">${d.viajes.length}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Fecha</th><th>Móvil</th><th>Origen</th><th>Destino</th><th style="text-align:right">RV</th><th style="text-align:right">Viático</th></tr></thead>
+    <tbody>${d.viajes.map(v=>`<tr><td>${v.fecha}</td><td>${v.movil}</td><td>${v.origen}</td><td>${v.destino}</td><td style="text-align:right;font-family:monospace">${fmtNum(v.rv)}</td><td style="text-align:right;font-family:monospace">${fmtNum(v.viatico)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="4">TOTAL</td><td style="text-align:right;font-family:monospace">G ${fmtNum(d.totalRV)}</td><td style="text-align:right;font-family:monospace">G ${fmtNum(d.totalViaticos)}</td></tr></tfoot>
+  </table>
+  <scr` + `ipt>window.onload=()=>window.print();</scr` + `ipt>
+  </body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html); w.document.close();
+};
+
+
+// ── Tema oscuro/claro ───────────────────────────────────────────
+window.toggleTheme = function() {
+  const isLight = document.body.classList.toggle('light-mode');
+  const ic = document.getElementById('theme-icon');
+  if(ic) ic.innerHTML = isLight ? '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+  try { localStorage.setItem('jornada-theme', isLight ? 'light' : 'dark'); } catch(e){}
+};
+
+function initTheme() {
+  try {
+    const saved = localStorage.getItem('jornada-theme');
+    if (saved === 'light') {
+      document.body.classList.add('light-mode');
+      const ic = document.getElementById('theme-icon');
+      if(ic) ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+    }
+  } catch(e){}
+  // Inicializar íconos Lucide
+}
+
+function showLoading(msg) {
+  document.getElementById('loading-msg').textContent = msg || 'Cargando...';
+  document.getElementById('loading-overlay').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+// ── Obtener la jornada activa del array ─────────────────────────
+function getJornadaActiva(d) {
+  if (!d || !d.jornadas || !d.jornadas.length) return null;
+  return d.jornadas.find(j => j.active) || null;
+}
+function getUltimaJornadaFinalizada(d) {
+  if (!d || !d.jornadas || !d.jornadas.length) return null;
+  const finalizadas = d.jornadas.filter(j => !j.active && j.fin);
+  if (!finalizadas.length) return null;
+  return finalizadas.sort((a,b) => tsToMs(b.fin) - tsToMs(a.fin))[0];
+}
+
+// ══════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════
+window.doLogin = async function() {
+  const inputUser = document.getElementById('login-user').value.trim();
+  const inputPass = document.getElementById('login-pass').value;
+  const errWrap   = document.getElementById('login-error');
+  const errMsg    = document.getElementById('login-error-msg');
+  errWrap.style.display = 'none';
+
+  if (!inputUser || !inputPass) {
+    errMsg.textContent    = 'Completá tu usuario y contraseña';
+    errWrap.style.display = 'flex';
+    return;
+  }
+
+  showLoading('Verificando credenciales...');
+  try {
+    // Traer TODOS los usuarios y comparar en cliente (case-insensitive)
+    // Evita problemas con mayúsculas/minúsculas en Firestore
+    const snap = await getDocs(collection(db, 'usuarios'));
+
+    let userData = null;
+    snap.forEach(d => {
+      const data = d.data();
+      if (!userData && data.username &&
+          data.username.trim().toLowerCase() === inputUser.trim().toLowerCase()) {
+        userData = { id: d.id, ...data };
+      }
+    });
+
+    if (!userData) {
+      throw new Error('Usuario "' + inputUser + '" no encontrado. Verificá con el supervisor.');
+    }
+    if (userData.pass !== inputPass) {
+      throw new Error('Contraseña incorrecta.');
+    }
+    if (userData.activo === false) {
+      throw new Error('Tu cuenta está deshabilitada. Contactá al supervisor.');
+    }
+    if (userData.role === 'admin') {
+      throw new Error('Los administradores deben usar el panel de administración.');
+    }
+
+    currentUser = userData;
+    hideLoading();
+    initChoferView();
+
+  } catch(e) {
+    hideLoading();
+    errMsg.textContent    = e.message;
+    errWrap.style.display = 'flex';
+    console.error('Login error:', e);
+  }
+};
+
+window.doLogout = function() {
+  clearInterval(tickInterval);
+  if (unsubJornada)   { unsubJornada();   unsubJornada   = null; }
+  if (unsubRegistros) { unsubRegistros(); unsubRegistros = null; }
+  currentUser = null; jornadaData = null; ultimaJornada = null;
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  showScreen('login');
+};
+
+// ══════════════════════════════════════════════════════════════
+// INICIAR PANEL CHOFER
+// ══════════════════════════════════════════════════════════════
+
+// Cache global de registros del usuario (para calcMovimiento y ultima macro)
+window._regsUsuario   = [];  // todos los registros ordenados por ts desc
+window._ultimaMacroUser = null; // última macro del turno activo
+
+function actualizarRegsGlobal(regs) {
+  // Guardar todos ordenados
+  window._regsUsuario = [...regs].sort((a,b) => (tsToMsAny(b.ts)||0)-(tsToMsAny(a.ts)||0));
+
+  // Última macro del turno activo (los del día actual, del turno más reciente)
+  const ja = getJornadaActiva(jornadaData);
+  if (!ja) { window._ultimaMacroUser = null; return; }
+
+  const iniMs = tsToMsAny(ja.inicio);
+  const regsDelTurno = window._regsUsuario
+    .filter(r => (tsToMsAny(r.ts)||0) >= iniMs)
+    .sort((a,b) => (tsToMsAny(b.ts)||0)-(tsToMsAny(a.ts)||0)); // más reciente primero
+
+  window._ultimaMacroUser = regsDelTurno[0]?.macro || null;
+}
+
+// Cache de TODOS los docs de jornada del usuario (no solo hoy)
+let _todasJornadas = []; // array de docs ordenados por fecha desc
+
+function initChoferView() {
+  showScreen('chofer');
+  document.getElementById('chofer-nombre').textContent = currentUser.nombre || currentUser.username;
+  document.getElementById('chofer-sub').textContent =
+    (currentUser.role === 'supervisor' ? 'Supervisor' : 'Chofer') +
+    (currentUser.dni ? ' · Leg. ' + currentUser.dni : '') +
+    ' · ' + new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  // ── Listener → TODOS los docs de jornada del usuario ─────────
+  // Así detecta jornada activa aunque sea de ayer o antes
+  const jQ = query(
+    collection(db,'jornadas'),
+    where('user','==', currentUser.username)
+  );
+  if (unsubJornada) unsubJornada();
+  unsubJornada = onSnapshot(jQ,
+    snap => {
+      _todasJornadas = snap.docs.map(d => d.data())
+        .sort((a,b) => (b.fecha||'').localeCompare(a.fecha||''));
+
+      // jornadaData = doc de hoy (o el más reciente con jornada activa)
+      const conActiva = _todasJornadas.find(j => (j.jornadas||[]).some(t=>t.active));
+      jornadaData = conActiva || _todasJornadas[0] || null;
+      ultimaJornada = getUltimaJornadaFinalizadaGlobal();
+      // Re-calcular última macro con los regs en cache
+      if (window._regsUsuario?.length) actualizarRegsGlobal(window._regsUsuario);
+      renderChoferUI();
+    },
+    err => {
+      console.warn('Listener jornadas error:', err.code, err.message);
+      // Fallback: solo hoy
+      const jRef = doc(db,'jornadas', jornadaDocId(currentUser.username));
+      getDocs(query(collection(db,'jornadas'),where('user','==',currentUser.username))).then(snap=>{
+        _todasJornadas = snap.docs.map(d=>d.data()).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+        jornadaData = _todasJornadas.find(j=>(j.jornadas||[]).some(t=>t.active)) || _todasJornadas[0] || null;
+        ultimaJornada = getUltimaJornadaFinalizadaGlobal();
+        renderChoferUI();
+      });
+    }
+  );
+
+  // ── Listener → TODOS los registros del usuario ────────────────
+  // Sin filtro de fecha — el timeline muestra todo con fecha+hora
+  const rQ = query(
+    collection(db,'registros'),
+    where('user','==', currentUser.username)
+  );
+  if (unsubRegistros) unsubRegistros();
+  unsubRegistros = onSnapshot(rQ,
+    snap => {
+      const regs = snap.docs.map(d => ({id:d.id,...d.data()}));
+      actualizarRegsGlobal(regs);
+      renderTimeline(regs);
+    },
+    err => {
+      console.warn('Listener registros error:', err.code, err.message);
+      getDocs(rQ).then(snap => {
+        const regs = snap.docs.map(d => ({id:d.id,...d.data()}));
+        actualizarRegsGlobal(regs);
+        renderTimeline(regs);
+      });
+    }
+  );
+
+  clearInterval(tickInterval);
+  tickInterval = setInterval(renderChoferUI, 1000);
+}
+
+// Busca la última jornada finalizada en TODOS los docs del usuario
+function getUltimaJornadaFinalizadaGlobal() {
+  let ultima = null;
+  let ultimaFinMs = 0;
+  _todasJornadas.forEach(jDoc => {
+    (jDoc.jornadas||[]).forEach(t => {
+      if(!t.active && t.fin) {
+        const finMs = tsToMs(t.fin);
+        if(finMs && finMs > ultimaFinMs) {
+          ultimaFinMs = finMs;
+          ultima = t;
         }
-  
-        const viajes = Object.values(datos);
-        mostrarViajes(viajes);
-      } catch (error) {
-        loadingDiv.style.display = "none";
-        console.error("Error al obtener los datos:", error);
-        resultadoDiv.innerHTML = "<p>Hubo un problema al cargar los datos.</p>";
       }
-    }
-  
-    // Convierte una cadena "dd/mm/yyyy" a objeto Date
-    function formatearFecha(fechaTexto) {
-      if (!fechaTexto) return null;
-      const partes = fechaTexto.split("/");
-      if (partes.length !== 3) return null;
-      const [dia, mes, año] = partes;
-      return new Date(`${año}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T00:00:00`);
-    }
-  
-    // Formatea a guaraníes
-    function formatearMoneda(valor) {
-      if (!valor) return "₲ 0";
-      const numero = parseFloat(String(valor).replace(/[^\d.-]/g, "")) || 0;
-      return "₲ " + numero.toLocaleString("es-PY");
-    }
-  
-    function mostrarViajes(viajes) {
-      const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.innerHTML = "";
+    });
+  });
+  return ultima;
+}
 
-      const ciFiltro = document.getElementById("ciInput").value.trim();
-      const fechaViajeInput = document.getElementById("fechaViaje").value;
-      const fechaViajeObj = fechaViajeInput ? new Date(fechaViajeInput + "T00:00:00") : null;
+// ── UI principal ────────────────────────────────────────────────
+function renderChoferUI() {
+  const now  = Date.now();
+  const ja   = getJornadaActiva(jornadaData);         // jornada activa
+  const uf   = getUltimaJornadaFinalizada(jornadaData); // última finalizada
 
-      if (ciFiltro === "") {
-        resultadoDiv.innerHTML = "<p>Por favor, ingrese un CI para realizar la consulta.</p>";
-        return;
+  // ── Interjornada ─────────────────────────────────────────────
+  // Mostrar cuando NO hay jornada activa (usa datos globales de todos los docs)
+  const ijCard = document.getElementById('interjornada-card');
+  if (!ja && uf && tsToMs(uf.fin)) {
+    const ijMs       = now - tsToMs(uf.fin);
+    const ijPct      = Math.min(100, (ijMs / (12 * 3600000)) * 100);
+    const ijCompleta = ijMs >= 12 * 3600000;
+    const faltanMs   = ijCompleta ? 0 : (12 * 3600000) - ijMs;
+    document.getElementById('interjornada-val').textContent = hhmmss(ijMs);
+    document.getElementById('interjornada-val').style.color =
+      ijCompleta ? 'var(--green)' : ijPct > 70 ? 'var(--amber)' : 'var(--red)';
+    document.getElementById('interjornada-sub').textContent =
+      ijCompleta
+        ? '✔ Interjornada completa (mín. 12:00:00)'
+        : `Faltan ${hhmmss(faltanMs)} para completar las 12:00:00 reglamentarias`;
+    // Barra de progreso de interjornada
+    const progEl = document.getElementById('interjornada-prog');
+    if (progEl) {
+      progEl.style.width      = ijPct + '%';
+      progEl.style.background = ijCompleta ? 'var(--green)' : ijPct > 70 ? 'var(--amber)' : 'var(--red)';
+    }
+    ijCard.style.display = 'flex';
+  } else {
+    ijCard.style.display = 'none';
+  }
+
+  // ── Jornada contador ─────────────────────────────────────────
+  let jornadaMs = 0;
+  if (ja) {
+    const ini = tsToMs(ja.inicio);
+    jornadaMs = ini ? now - ini : 0;
+  }
+  document.getElementById('stat-jornada').textContent = hhmmss(jornadaMs);
+  const pj = Math.min(100,(jornadaMs/(10*3600000))*100);
+  const pjEl = document.getElementById('prog-jornada');
+  pjEl.style.width   = pj + '%';
+  pjEl.style.background = pj > 90 ? 'var(--red)' : pj > 70 ? 'var(--amber)' : 'var(--accent)';
+
+  // ── Consumisión ───────────────────────────────────────────────
+  let consumTotal = 0;
+  let consumActiva = false;
+  let consumActivaMs = 0;
+  let consumisiones = [];
+  if (ja) {
+    consumisiones = ja.consumisiones || [];
+    consumisiones.forEach(c => {
+      const s = tsToMs(c.start), e = tsToMs(c.end);
+      if (s && e) consumTotal += (e - s);
+    });
+    if (ja.consumisionActiva && ja.consumisionStart) {
+      consumActiva   = true;
+      consumActivaMs = now - tsToMs(ja.consumisionStart);
+      consumTotal   += consumActivaMs;
+    }
+  }
+
+  const statConsum = document.getElementById('stat-consumision');
+  statConsum.textContent = hhmmss(consumTotal);
+  statConsum.className   = 'stat-val ' + (consumTotal > 3600000 ? 'red' : consumTotal > 1800000 ? 'amber' : 'green');
+
+  const pc   = Math.min(100,(consumTotal/3600000)*100);
+  const pcEl = document.getElementById('prog-consumision');
+  pcEl.style.width      = pc + '%';
+  pcEl.style.background = pc >= 100 ? 'var(--red)' : pc > 70 ? 'var(--amber)' : 'var(--green)';
+
+  // ── Alertas ───────────────────────────────────────────────────
+  document.getElementById('alerta-consumision-max').style.display   = consumTotal > 3600000 ? 'flex' : 'none';
+  const mas4h = jornadaMs >= 4*3600000;
+  document.getElementById('alerta-4h').style.display =
+    (mas4h && ja && !consumActiva && consumTotal < 3600000) ? 'flex' : 'none';
+
+  const alertCA = document.getElementById('alerta-consumision-activa');
+  if (consumActiva) {
+    alertCA.style.display = 'flex';
+    document.getElementById('consumicion-timer').textContent = hhmmss(consumActivaMs);
+  } else {
+    alertCA.style.display = 'none';
+  }
+
+  // ── Banner estado ─────────────────────────────────────────────
+  const banner   = document.getElementById('banner-estado');
+  const bannerTx = document.getElementById('banner-texto');
+  if (!ja && !uf) {
+    banner.style.display = 'none';
+  } else if (!ja && uf) {
+    banner.style.display  = 'flex';
+    banner.className      = 'alert alert-gray';
+    bannerTx.textContent  = 'Jornada finalizada a las ' + fmtHora(uf.fin) + ' · Podés iniciar una nueva';
+  } else if (consumActiva) {
+    banner.style.display  = 'flex';
+    banner.className      = 'alert alert-amber';
+    bannerTx.textContent  = 'Consumisión en curso — finalizará al marcar Llegada a fábrica';
+  } else {
+    banner.style.display  = 'flex';
+    banner.className      = 'alert alert-blue';
+    bannerTx.textContent  = '▶ Jornada en curso desde las ' + fmtHora(ja.inicio);
+  }
+
+  // ── Móvil badge ───────────────────────────────────────────────
+  const mb = document.getElementById('chofer-movil-badge');
+  // Solo mostrar móvil si hay jornada ACTIVA — si está cerrada, ocultar
+  const mv = ja ? jornadaData?.movilActual : null;
+  if (mv) { mb.textContent = 'Móvil ' + mv; mb.className = 'badge badge-blue'; mb.style.display=''; }
+  else    { mb.style.display = 'none'; }
+
+  // ── Habilitar/deshabilitar macros ────────────────────────────
+  const noJornada = !ja;
+  const maxConsum = consumTotal >= 3600000;
+  const maxCortes = consumisiones.length >= 2;
+
+  // Última macro registrada en esta jornada (para evitar marcaciones dobles)
+  // Leemos del listener de registros — accedemos vía variable global
+  const ultimaMacro = (window._ultimaMacroUser) || null;
+
+  // Reglas:
+  // inicio      → solo si NO hay jornada activa
+  // llegada     → requiere jornada activa; no se puede repetir si la última fue llegada;
+  //               solo tiene sentido tras consumision (o tras inicio si hubo consumision activa)
+  // consumision → requiere jornada activa, no consumición activa, no maxConsum, no maxCortes, +4hs
+  //               no se puede si la última macro fue consumision
+  // reinicio    → requiere jornada activa; solo tiene sentido tras cambio
+  //               no se puede repetir si la última fue reinicio
+  // cambio      → requiere jornada activa; no se puede repetir si la última fue cambio
+  //               no tiene sentido si ya hubo reinicio después del último cambio
+  // fin         → requiere jornada activa; no consumición activa
+  //               no se puede si la última fue fin (no debería pasar, pero por seguridad)
+
+  const yaHuboCambioSinReinicio = (() => {
+    // Verificar si la secuencia de macros tiene un 'cambio' sin 'reinicio' posterior
+    if (!window._regsUsuario) return false;
+    const ini = tsToMsAny(ja?.inicio);
+    const regsDelTurno = (window._regsUsuario)
+      .filter(r => (tsToMsAny(r.ts)||0) >= ini)
+      .sort((a,b) => (tsToMsAny(a.ts)||0)-(tsToMsAny(b.ts)||0));
+    let cambioSinReinicio = false;
+    regsDelTurno.forEach(r => {
+      if (r.macro === 'cambio')   cambioSinReinicio = true;
+      if (r.macro === 'reinicio') cambioSinReinicio = false;
+    });
+    return cambioSinReinicio;
+  })();
+
+  setDisabled('mac-inicio',
+    !!ja                              // bloqueado si ya hay jornada activa
+  );
+  setDisabled('mac-llegada',
+    noJornada                         // sin jornada activa
+    || ultimaMacro === 'llegada'      // no repetir dos veces seguidas
+  );
+  setDisabled('mac-consumision',
+    noJornada                         // sin jornada activa
+    || consumActiva                   // ya hay consumicion activa
+    || maxConsum                      // ya alcanzo 60 min
+    || maxCortes                      // ya hizo 2 cortes
+    || ultimaMacro === 'consumision'  // no repetir dos veces seguidas
+  );
+  setDisabled('mac-reinicio',
+    noJornada                         // sin jornada activa
+    || !yaHuboCambioSinReinicio       // solo tiene sentido tras un cambio sin reinicio
+    || ultimaMacro === 'reinicio'     // no repetir dos veces seguidas
+  );
+  setDisabled('mac-cambio',
+    noJornada                         // sin jornada activa
+    || yaHuboCambioSinReinicio        // ya hay un cambio pendiente de reinicio
+    || ultimaMacro === 'cambio'       // no repetir dos veces seguidas
+  );
+  setDisabled('mac-fin',
+    noJornada                         // sin jornada activa
+    || consumActiva                   // consumicion activa sin cerrar
+  );
+}
+
+function setDisabled(id, disabled) {
+  document.getElementById(id).classList.toggle('disabled-macro', disabled);
+}
+
+// ── Timeline ────────────────────────────────────────────────────
+const LABELS = {
+  inicio:'Inicio de jornada', llegada:'Llegada a fábrica',
+  consumision:'Inicio consumisión',
+  reinicio:'Reinicio de viaje', cambio:'Cambio de conductor',
+  fin:'Fin de jornada'
+};
+const DOT_COLORS = {
+  inicio:'var(--green)', llegada:'var(--accent)', consumision:'var(--amber)',
+  reinicio:'#14b8a6', cambio:'var(--purple)', fin:'var(--red)'
+};
+
+function tsToMsAny(ts) {
+  if (!ts) return 0;
+  if (typeof ts.toDate === 'function') return ts.toDate().getTime();
+  if (ts.seconds !== undefined) return ts.seconds * 1000 + Math.floor((ts.nanoseconds || 0) / 1e6);
+  if (typeof ts === 'number') return ts;
+  return 0;
+}
+
+function tsToHora(ts) {
+  const ms = tsToMsAny(ts);
+  if (!ms) return '--:--:--';
+  return new Date(ms).toTimeString().slice(0, 8);
+}
+
+function tsToFechaCorta(ts) {
+  const ms = tsToMsAny(ts);
+  if (!ms) return '';
+  const d = new Date(ms);
+  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
+}
+
+function renderTimeline(regs) {
+  const tl = document.getElementById('timeline-chofer');
+  document.getElementById('tl-count').textContent = regs.length;
+
+  if (!regs || !regs.length) {
+    tl.innerHTML = `<div style="text-align:center;padding:2rem 0;color:var(--text3);font-size:13px">
+      Sin registros aún</div>`;
+    return;
+  }
+
+  const sorted   = [...regs].sort((a,b) => tsToMsAny(a.ts) - tsToMsAny(b.ts));
+  const reversed = [...sorted].reverse();
+  const todayStr = new Date().toISOString().slice(0,10);
+
+  // Colores por macro
+  const COLORS = {
+    inicio:'#22c55e', llegada:'#4f7eff', consumision:'#f59e0b',
+    reinicio:'#14b8a6', cambio:'#a78bfa', fin:'#ef4444'
+  };
+  const ICONS = {
+    inicio:'▶', llegada:'🏭', consumision:'⏸',
+    reinicio:'↩', cambio:'🔄', fin:'⏹'
+  };
+
+  tl.innerHTML = reversed.map((r, i) => {
+    const esManual  = !!(r.ajusteManual);
+    const color     = esManual ? '#f59e0b' : (COLORS[r.macro] || '#6b7280');
+    const isLast    = i === reversed.length - 1;
+    const hora      = tsToHora(r.ts);
+    const tsMs      = tsToMsAny(r.ts);
+    const hasGPS    = r.lat && r.lat !== 'no disp.' && r.lat !== 'ajuste manual';
+
+    // Fecha si es de otro día
+    const regFecha = r.fecha || (tsMs ? new Date(tsMs).toISOString().slice(0,10) : '');
+    const esMismoDia = regFecha === todayStr || !regFecha;
+    const diaLabel = !esMismoDia
+      ? (() => {
+          const d = new Date(regFecha + 'T12:00:00');
+          return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'});
+        })()
+      : '';
+
+    const label = LABELS[r.macro] || r.macro;
+
+    const mapaData = JSON.stringify({
+      macro:r.macro, movil:r.movil||'—',
+      lat:r.lat||'', lng:r.lng||'',
+      nombre:r.nombre||'', _ts:tsMs
+    });
+
+    return `
+<div style="display:flex;gap:0;margin-bottom:0">
+  <!-- Línea vertical + dot -->
+  <div style="display:flex;flex-direction:column;align-items:center;width:20px;flex-shrink:0;padding-top:14px">
+    <div style="width:${esManual?12:10}px;height:${esManual?12:10}px;border-radius:50%;background:${color};flex-shrink:0;
+      ${esManual?'box-shadow:0 0 0 3px rgba(245,158,11,.25)':''}"></div>
+    ${!isLast?`<div style="flex:1;width:2px;background:rgba(255,255,255,.07);border-radius:2px;margin:4px 0;min-height:24px"></div>`:''}
+  </div>
+
+  <!-- Contenido -->
+  <div style="flex:1;padding:8px 0 ${isLast?'4':'20'}px 12px;min-width:0">
+
+    <!-- Fila superior: hora + fecha badge -->
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+      <span style="font-size:13px;font-weight:700;color:var(--text2);font-family:'Courier New',monospace;
+        letter-spacing:.02em">${hora}</span>
+      ${!esMismoDia?`
+        <span style="font-size:10px;font-weight:700;background:rgba(239,68,68,.18);color:#ef4444;
+          padding:2px 7px;border-radius:20px;font-family:'Courier New',monospace;
+          letter-spacing:.03em">${diaLabel}</span>`:''}
+      ${esManual?`
+        <span style="font-size:10px;font-weight:700;background:rgba(245,158,11,.15);color:#f59e0b;
+          padding:2px 7px;border-radius:20px;letter-spacing:.02em">✏ Manual</span>`:''}
+    </div>
+
+    <!-- Nombre de la macro -->
+    <div style="font-size:14px;font-weight:700;color:var(--text);line-height:1.25;
+      margin-bottom:2px">${label}</div>
+
+    <!-- Móvil -->
+    <div style="font-size:12px;color:var(--text3)">Móvil&nbsp;<span style="color:var(--text2);font-weight:500">${r.movil||'—'}</span></div>
+
+    <!-- GPS -->
+    ${hasGPS?`<div onclick='showMapa(${mapaData})'
+      style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;
+        color:var(--accent);margin-top:6px;cursor:pointer;padding:4px 0">
+      📍 Ver ubicación</div>`:''}
+
+  </div>
+</div>`;
+  }).join('');
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// FLUJO MACRO — funciones llamadas desde HTML (deben ser globales)
+// ══════════════════════════════════════════════════════════════
+
+// Lista de móviles disponibles
+const MOVILES = ['TALLER','730','731','732','733','734','735','736','737','738','739',
+  '740','741','742','743','744','745','746','747','748','749','750',
+  '751','752','753','754','755','756','757','758','759'];
+
+// Abre el modal de selección de móvil y luego ejecuta la macro
+window.triggerMacro = function(macro) {
+  if (macro === 'inicio') {
+    // Verificar interjornada primero
+    const uf = ultimaJornada || getUltimaJornadaFinalizadaGlobal();
+    if (uf && tsToMs(uf.fin)) {
+      const ijMs = Date.now() - tsToMs(uf.fin);
+      document.getElementById('modal-ij-val').textContent = hhmmss(ijMs);
+      const alertaEl  = document.getElementById('modal-ij-alerta');
+      const alertaTxt = document.getElementById('modal-ij-alerta-txt');
+      if (ijMs < 12 * 3600000) {
+        const faltanMs = (12 * 3600000) - ijMs;
+        alertaTxt.textContent = `Interjornada menor a 12:00:00 — faltan ${hhmmss(faltanMs)} para completar el mínimo.`;
+        alertaEl.style.display = 'flex';
+      } else {
+        alertaEl.style.display = 'none';
       }
+      pendingMacro = 'inicio';
+      document.getElementById('modal-interjornada').style.display = 'flex';
+      return;
+    }
+  }
+  openMovilModal(macro);
+};
 
-      if (isNaN(ciFiltro)) {
-        resultadoDiv.innerHTML = "<p>El CI debe ser numérico.</p>";
-        return;
-      }
+// Abre modal de selección de móvil
+function openMovilModal(macro) {
+  pendingMacro = macro;
+  // Pre-seleccionar móvil actual si existe
+  const movilActual = jornadaData?.movilActual || '';
+  const sel = document.getElementById('select-movil');
+  if (sel) {
+    // Respetar el select ya existente en el HTML — solo cambiar la opción seleccionada
+    Array.from(sel.options).forEach(opt => {
+      opt.selected = opt.value === movilActual;
+    });
+    // Si no hay móvil actual, seleccionar la primera opción no-TALLER
+    if (!movilActual) {
+      const primerMovil = Array.from(sel.options).find(o => o.value !== 'TALLER');
+      if (primerMovil) primerMovil.selected = true;
+    }
+  }
+  document.getElementById('modal-movil').style.display = 'flex';
+}
 
-      const viajesFiltrados = viajes.filter(viaje => {
-        const ciViaje = String(viaje["CI"]).trim();
-        const cumpleCI = ciViaje === ciFiltro;
-        const fechaViaje = formatearFecha(viaje["DATA DA VIAGEM"]);
-        const cumpleFecha = fechaViajeObj
-          ? (fechaViaje && fechaViaje.toDateString() === fechaViajeObj.toDateString())
-          : true;
-        return cumpleCI && cumpleFecha;
-      });
+window.closeMovilModal = function() {
+  document.getElementById('modal-movil').style.display = 'none';
+  pendingMacro = null;
+};
 
-      if (!viajesFiltrados.length) {
-        resultadoDiv.innerHTML = "<p>No se encontraron viajes con los filtros aplicados.</p>";
-        return;
-      }
+window.confirmMovil = function() {
+  const sel = document.getElementById('select-movil');
+  const movil = (sel && sel.value) ? sel.value : (jornadaData?.movilActual || '730');
+  console.log('[confirmMovil] móvil seleccionado:', movil);
+  document.getElementById('modal-movil').style.display = 'none';
+  executeMacro(pendingMacro, movil);
+  pendingMacro = null;
+};
 
-      // Ordenar por fecha de más antiguo a más nuevo
-      viajesFiltrados.sort((a, b) => {
-        const fechaA = formatearFecha(a["DATA DA VIAGEM"]) || new Date(0);
-        const fechaB = formatearFecha(b["DATA DA VIAGEM"]) || new Date(0);
-        return fechaA - fechaB;
-      });
+window.cancelarInicioJornada = function() {
+  document.getElementById('modal-interjornada').style.display = 'none';
+  pendingMacro = null;
+};
 
-      // Crear tabla
-      let tabla = `<table>
-        <tr>
-          <th>Fecha</th>
-          <th>Chofer</th>
-          <th>Origen</th>
-          <th>Destino</th>
-          <th>Flota</th>
-          <th>DT</th>
-          <th>Viático</th>
-          <th>CI</th>
-          <th>Tipo</th>
-          <th>RV General</th>
-        </tr>`;
+window.continuarInicioJornada = function() {
+  document.getElementById('modal-interjornada').style.display = 'none';
+  openMovilModal('inicio');
+};
 
-      viajesFiltrados.forEach(viaje => {
-        tabla += `<tr>
-          <td>${viaje["DATA DA VIAGEM"]}</td>
-          <td>${viaje["MOTORISTA 1"] || "No disponible"}</td>
-          <td>${viaje["ORIGEM IDA"] || "No disponible"}</td>
-          <td>${viaje["DESTINO IDA"] || "No disponible"}</td>
-          <td>${viaje["FLOTA "] || "No disponible"}</td>
-          <td>${viaje["DT"] || "No disponible"}</td>
-          <td>${formatearMoneda(viaje["VIATICO"])}</td>
-          <td>${viaje["CI"] || "No disponible"}</td>
-          <td>${viaje["TIPO"] || "No disponible"}</td>
-          <td>${formatearMoneda(viaje["RV GENERAL"])}</td>
-        </tr>`;
-      });
+// ══════════════════════════════════════════════════════════════
+// EJECUTAR MACRO → FIRESTORE
+// LÓGICA CLAVE:
+//  - El doc "jornadas/{user_fecha}" tiene un array "jornadas"
+//  - Cada elemento: { inicio, fin, active, consumisiones[], consumisionActiva, consumisionStart }
+//  - "inicio" crea un nuevo elemento en el array
+//  - "fin" cierra el elemento activo
+//  - "llegada" cierra la consumisión activa si existe
+//  - "consumision" abre una consumisión en el elemento activo
+// ══════════════════════════════════════════════════════════════
+// ── Obtener ubicación GPS ────────────────────────────────────────
+function getLocation() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) {
+      resolve({ lat: 'no disp.', lng: 'no disp.' });
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({
+        lat: pos.coords.latitude.toFixed(6),
+        lng: pos.coords.longitude.toFixed(6)
+      }),
+      () => resolve({ lat: 'no disp.', lng: 'no disp.' }),
+      { timeout: 8000, maximumAge: 30000, enableHighAccuracy: true }
+    );
+  });
+}
 
-      // Totales
-      let totalRVGeneral = viajesFiltrados.reduce((acc, viaje) =>
-        acc + (parseFloat(viaje["RV GENERAL"]) || 0), 0);
-      let totalViatico = viajesFiltrados.reduce((acc, viaje) =>
-        acc + (parseFloat(String(viaje["VIATICO"]).replace(/[^\d]/g, "")) || 0), 0);
+async function executeMacro(macro, movil) {
+  showLoading('Registrando...');
+  try {
+    const loc    = await getLocation();
+    const now    = Timestamp.now();
+    const docRef = doc(db, 'jornadas', jornadaDocId(currentUser.username));
+    const snap   = await getDoc(docRef);
 
-      tabla += `<tr class="total-row">
-          <td colspan="6">TOTAL</td>
-          <td>${formatearMoneda(totalViatico)}</td>
-          <td></td>
-          <td></td>
-          <td>${formatearMoneda(totalRVGeneral)}</td>
-        </tr>`;
+    // Estructura del documento
+    const d = snap.exists() ? snap.data() : {
+      user:        currentUser.username,
+      nombre:      currentUser.nombre || currentUser.username,
+      fecha:       todayKey(),
+      jornadas:    [],
+      movilActual: null
+    };
 
-      tabla += `</table>`;
-      resultadoDiv.innerHTML = tabla;
+    d.movilActual = movil;
+    const jArr = d.jornadas || [];
+
+    // Índice de la jornada activa (si existe)
+    const jaIdx = jArr.findIndex(j => j.active);
+    const ja    = jaIdx >= 0 ? jArr[jaIdx] : null;
+
+    switch(macro) {
+
+      case 'inicio':
+        // Crear nueva jornada en el array
+        jArr.push({
+          inicio:            now,
+          fin:               null,
+          active:            true,
+          consumisiones:     [],
+          consumisionActiva: false,
+          consumisionStart:  null
+        });
+        break;
+
+      case 'llegada':
+        // Si hay consumisión activa → cerrarla automáticamente
+        if (ja && ja.consumisionActiva && ja.consumisionStart) {
+          jArr[jaIdx].consumisiones.push({ start: ja.consumisionStart, end: now });
+          jArr[jaIdx].consumisionActiva = false;
+          jArr[jaIdx].consumisionStart  = null;
+        }
+        break;
+
+      case 'consumision':
+        if (ja) {
+          jArr[jaIdx].consumisionActiva = true;
+          jArr[jaIdx].consumisionStart  = now;
+        }
+        break;
+
+      case 'fin':
+        if (ja) {
+          jArr[jaIdx].active = false;
+          jArr[jaIdx].fin    = now;
+          d.movilActual = null; // limpiar móvil activo al cerrar jornada
+        }
+        break;
+
+      // reinicio y cambio: solo generan registro, actualizan móvil
+      default: break;
     }
 
-    document.getElementById("btnFiltrar").addEventListener("click", obtenerViajesDesdeFirebase);
-  </script>
-  
-  <!-- Botón flotante de WhatsApp -->
-  <a href="https://wa.me/595984770132" class="whatsapp-btn">📲 Solicitar Ajuste! </a>
-  
-  <footer>© 2025 FADEL T1 PY. Todos los derechos reservados.</footer>
+    d.jornadas = jArr;
+    await setDoc(docRef, d);
+
+    // Registro individual
+    await addDoc(collection(db,'registros'), {
+      user:   currentUser.username,
+      nombre: currentUser.nombre || currentUser.username,
+      fecha:  todayKey(),
+      macro,
+      movil,
+      ts:     now,
+      lat:    loc.lat,
+      lng:    loc.lng
+    });
+
+  } catch(e) {
+    alert('❌ Error: ' + e.message);
+    console.error(e);
+  } finally {
+    hideLoading();
+  }
+}
+
+// ── Modal mapa ───────────────────────────────────────────────────
+window.showMapa = function(r) {
+  document.getElementById('modal-mapa-title').textContent = '📍 ' + (LABELS[r.macro] || r.macro);
+  const url  = `https://www.google.com/maps?q=${r.lat},${r.lng}`;
+  // _ts es número puro (serializado desde el onclick), r.ts puede ser objeto
+  const horaMs = r._ts || tsToMsAny(r.ts);
+  const hora   = horaMs ? new Date(horaMs).toTimeString().slice(0,8) : '--:--:--';
+
+  document.getElementById('modal-mapa-body').innerHTML = `
+    <div class="mapa-row"><span class="mapa-row-label">Hora</span><span class="mapa-row-val">${hora}</span></div>
+    <div class="mapa-row"><span class="mapa-row-label">Móvil</span><span class="mapa-row-val">${r.movil || '—'}</span></div>
+    <div class="mapa-row"><span class="mapa-row-label">Latitud</span><span class="mapa-row-val">${r.lat}</span></div>
+    <div class="mapa-row"><span class="mapa-row-label">Longitud</span><span class="mapa-row-val">${r.lng}</span></div>
+    <a href="${url}" target="_blank" rel="noopener"
+       class="btn btn-primary" style="text-decoration:none;margin-top:1rem">Ver en Google Maps ↗</a>`;
+  document.getElementById('modal-mapa').style.display = 'flex';
+};
+
+// ── Init ─────────────────────────────────────────────────────────
+hideLoading();
+showScreen('login');
+</script>
 </body>
 </html>
