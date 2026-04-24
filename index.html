@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Control de Jornada</title>
 <style>
@@ -54,7 +57,7 @@ body.light-mode input,body.light-mode select{
 }
 .theme-toggle:active{transform:scale(.9)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.5;overscroll-behavior:none}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;overscroll-behavior:none}
 .screen{display:none;min-height:100vh;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,80px)}
 .screen.active{display:block}
 
@@ -113,7 +116,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.875rem}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
 .stat-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
-.stat-val{font-size:26px;font-weight:700;font-family:'Courier New',monospace;letter-spacing:.02em;line-height:1}
+.stat-val{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.02em;line-height:1}
 .stat-val.green{color:var(--green)}
 .stat-val.amber{color:var(--amber)}
 .stat-val.red{color:var(--red)}
@@ -125,7 +128,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .interjornada-card{background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(79,126,255,.08));border:1px solid rgba(167,139,250,.2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:.875rem;display:flex;align-items:center;gap:12px}
 .interjornada-icon{font-size:28px;flex-shrink:0}
 .interjornada-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:2px}
-.interjornada-val{font-size:20px;font-weight:700;font-family:'Courier New',monospace;color:var(--purple)}
+.interjornada-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--purple)}
 .interjornada-sub{font-size:11px;color:var(--text3);margin-top:2px}
 
 /* ── ALERTAS ────────────────────────────────────────────── */
@@ -174,7 +177,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .mapa-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
 .mapa-row:last-child{border-bottom:none}
 .mapa-row-label{font-size:13px;color:var(--text3);font-weight:500}
-.mapa-row-val{font-size:13px;color:var(--text);font-family:'Courier New',monospace}
+.mapa-row-val{font-size:13px;color:var(--text);font-family:'JetBrains Mono',monospace}
 
 /* ── LOADING ────────────────────────────────────────────── */
 .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:16px}
@@ -184,10 +187,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 /* ── MODAL INTERJORNADA ─────────────────────────────────── */
 .ij-highlight{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:var(--radius-sm);padding:1rem;text-align:center;margin-bottom:1rem}
-.ij-highlight .val{font-size:36px;font-weight:700;font-family:'Courier New',monospace;color:var(--purple)}
+.ij-highlight .val{font-size:36px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--purple)}
 .ij-highlight .label{font-size:12px;color:var(--text3);margin-top:4px}
 
-.mono{font-family:'Courier New',monospace}
+.mono{font-family:'JetBrains Mono',monospace}
 </style>
 </head>
 <body>
@@ -395,22 +398,22 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
     <!-- KPIs -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem" id="rv-kpis">
-      <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">RV Acumulado</div>
-        <div style="font-size:28px;font-weight:800;font-family:'Courier New',monospace;color:var(--accent)" id="rv-total">—</div>
+    <div style="display:flex;gap:8px;margin-bottom:1.25rem" id="rv-kpis">
+      <div style="flex:1;background:linear-gradient(135deg,rgba(79,126,255,.12),rgba(79,126,255,.06));border:1px solid rgba(79,126,255,.2);border-radius:12px;padding:12px 8px;text-align:center;min-width:0">
+        <div style="font-size:9px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;opacity:.8;white-space:nowrap">RV Total</div>
+        <div style="font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent);line-height:1.2;overflow-wrap:break-word" id="rv-total">—</div>
       </div>
-      <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Viáticos</div>
-        <div style="font-size:28px;font-weight:800;font-family:'Courier New',monospace;color:var(--green)" id="rv-viaticos">—</div>
+      <div style="flex:1;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.06));border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:12px 8px;text-align:center;min-width:0">
+        <div style="font-size:9px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;opacity:.8;white-space:nowrap">Viáticos</div>
+        <div style="font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--green);line-height:1.2;overflow-wrap:break-word" id="rv-viaticos">—</div>
       </div>
-      <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:center">
-        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Viajes</div>
-        <div style="font-size:28px;font-weight:800;font-family:'Courier New',monospace" id="rv-viajes">—</div>
+      <div style="flex:0 0 64px;background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(167,139,250,.06));border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:12px 8px;text-align:center">
+        <div style="font-size:9px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;opacity:.8">Viajes</div>
+        <div style="font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--purple);line-height:1" id="rv-viajes">—</div>
       </div>
     </div>
-
     <!-- Tabla de viajes -->
-    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Detalle de viajes</div>
+    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem">Detalle de viajes</div>
     <div id="rv-tabla" style="font-size:13px">
       <div style="text-align:center;padding:2rem;color:var(--text3)">Cargando datos...</div>
     </div>
@@ -608,17 +611,7 @@ window.abrirModalRV = async function(){
     });
 
     // Log para diagnóstico — ver campos reales
-    // diagnóstico — mostrar raw values visibles en el modal
-    if(viajes.length > 0){
-      const v0 = viajes[0];
-      const diagEl = document.createElement('div');
-      diagEl.style.cssText = 'background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:10px;font-family:monospace;color:var(--amber)';
-      diagEl.innerHTML = '🔍 FLOTA=' + JSON.stringify(v0['FLOTA']) +
-        ' | CAVALO=' + JSON.stringify(v0['CAVALO']) +
-        ' | RV CHOFER=' + JSON.stringify(v0['RV CHOFER']) +
-        ' | VIATICO=' + JSON.stringify(v0['VIATICO']);
-      document.getElementById('rv-kpis').insertAdjacentElement('beforebegin', diagEl);
-    }
+    // campos confirmados desde Firebase real
 
     if(!viajes.length){
       document.getElementById('rv-tabla').innerHTML =
@@ -641,16 +634,26 @@ window.abrirModalRV = async function(){
       const fecha   = parsearFecha(v['DATA DA VIAGEM'] || v['DATA VIAGEM'] || v['data'] || '');
       const origen  = String(v['ORIGEM IDA'] || v['ORIGEM'] || '—');
       const destino = String(v['DESTINO IDA'] || v['DESTINO'] || '—');
-      // Móvil: FLOTA tiene el número (730, 731, etc.)
-      // CAVALO tiene el número del camión (puede ser 0)
-      const _flota  = v['FLOTA'];
-      const _cavalo = v['CAVALO'];
-      // Preferir CAVALO si es >0, sino usar FLOTA directamente
-      const movil = (_cavalo && Number(_cavalo) > 0)
-        ? String(_cavalo)
-        : (_flota !== undefined && _flota !== null && _flota !== '')
-          ? String(_flota)
-          : '—';
+      // Móvil: buscar en múltiples campos conocidos + fallback por rango numérico
+      let movil = '—';
+      const camposMovil = ['FLOTA','CAVALO','PLACA','VEICULO','CAMINHAO','MOVIL','VIATURA','FROTA','flota','cavalo','Frota','Flota'];
+      for(const cm of camposMovil){
+        const val = v[cm];
+        if(val !== undefined && val !== null && val !== '' && val !== 0 && val !== '0'){
+          movil = String(val);
+          break;
+        }
+      }
+      // Fallback: cualquier campo con número entre 700-800 (rango de móviles)
+      if(movil === '—'){
+        for(const k of Object.keys(v)){
+          const n = Number(v[k]);
+          if(!isNaN(n) && n >= 700 && n <= 800 && Number.isInteger(n)){
+            movil = String(n);
+            break;
+          }
+        }
+      }
       const dt      = v['DT'] !== undefined && v['DT'] !== '' ? String(v['DT']) : '—';
 
       totalRV       += rv;
@@ -667,36 +670,36 @@ window.abrirModalRV = async function(){
 
     // Tabla
     document.getElementById('rv-tabla').innerHTML = `
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:360px">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid rgba(255,255,255,.07)">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed">
           <thead>
-            <tr style="border-bottom:1px solid rgba(255,255,255,.12)">
-              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;white-space:nowrap;font-size:11px">Fecha</th>
-              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Móvil</th>
-              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">DT</th>
-              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Origen</th>
-              <th style="padding:7px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:11px">Destino</th>
-              <th style="padding:7px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:11px">RV</th>
-              <th style="padding:7px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:11px">Viático</th>
+            <tr style="background:rgba(255,255,255,.04)">
+              <th style="padding:8px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;width:42px">Fecha</th>
+              <th style="padding:8px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;width:38px">Móvil</th>
+              <th style="padding:8px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;width:72px">DT</th>
+              <th style="padding:8px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase">Origen</th>
+              <th style="padding:8px 5px;text-align:left;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase">Destino</th>
+              <th style="padding:8px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;width:52px">RV</th>
+              <th style="padding:8px 5px;text-align:right;color:var(--text3);font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;width:52px">Viático</th>
             </tr>
           </thead>
           <tbody>
             ${filas.map((f,i) => `
-              <tr style="border-bottom:1px solid rgba(255,255,255,.04);${i%2===0?'background:rgba(255,255,255,.02)':''}">
-                <td style="padding:7px 5px;white-space:nowrap;font-family:'Courier New',monospace;font-size:11px;color:var(--text2)">${f.fecha}</td>
-                <td style="padding:7px 5px;font-size:11px;white-space:nowrap;color:var(--text2)">${f.movil}</td>
-                <td style="padding:7px 5px;font-size:10px;white-space:nowrap;color:var(--text3);font-family:'Courier New',monospace">${f.dt}</td>
-                <td style="padding:7px 5px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${f.origen}</td>
-                <td style="padding:7px 5px;max-width:75px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${f.destino}</td>
-                <td style="padding:7px 5px;text-align:right;font-weight:700;color:var(--accent);font-family:'Courier New',monospace;font-size:11px">${fmtNum(f.rv)}</td>
-                <td style="padding:7px 5px;text-align:right;color:var(--green);font-family:'Courier New',monospace;font-size:11px">${fmtNum(f.viatico)}</td>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.04);${i%2===0?'background:rgba(255,255,255,.02);':''}">
+                <td style="padding:7px 5px;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--text2)">${f.fecha}</td>
+                <td style="padding:7px 5px;font-size:12px;font-weight:700;white-space:nowrap;color:var(--text)">${f.movil}</td>
+                <td style="padding:7px 5px;font-size:10px;white-space:nowrap;color:var(--text3);font-family:'JetBrains Mono',monospace">${f.dt}</td>
+                <td style="padding:7px 5px;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis">${f.origen}</td>
+                <td style="padding:7px 5px;font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis">${f.destino}</td>
+                <td style="padding:7px 5px;text-align:right;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${fmtNum(f.rv)}</td>
+                <td style="padding:7px 5px;text-align:right;font-weight:600;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${fmtNum(f.viatico)}</td>
               </tr>`).join('')}
           </tbody>
           <tfoot>
-            <tr style="border-top:2px solid rgba(255,255,255,.15);background:rgba(79,126,255,.08)">
-              <td colspan="5" style="padding:9px 5px;font-weight:700;font-size:12px">TOTAL</td>
-              <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--accent);font-family:'Courier New',monospace;font-size:12px">${fmtNum(totalRV)}</td>
-              <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--green);font-family:'Courier New',monospace;font-size:12px">${fmtNum(totalViaticos)}</td>
+            <tr style="background:linear-gradient(90deg,rgba(79,126,255,.1),rgba(79,126,255,.05))">
+              <td colspan="5" style="padding:9px 5px;font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)">Total</td>
+              <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px;white-space:nowrap">${fmtNum(totalRV)}</td>
+              <td style="padding:9px 5px;text-align:right;font-weight:800;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;white-space:nowrap">${fmtNum(totalViaticos)}</td>
             </tr>
           </tfoot>
         </table>
@@ -1133,6 +1136,7 @@ function renderChoferUI() {
   );
   setDisabled('mac-consumision',
     noJornada                         // sin jornada activa
+    || !mas4h                         // menos de 4hs de jornada — bloqueado
     || consumActiva                   // ya hay consumicion activa
     || maxConsum                      // ya alcanzo 60 min
     || maxCortes                      // ya hizo 2 cortes
@@ -1255,11 +1259,11 @@ function renderTimeline(regs) {
 
     <!-- Fila superior: hora + fecha badge -->
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-      <span style="font-size:13px;font-weight:700;color:var(--text2);font-family:'Courier New',monospace;
+      <span style="font-size:13px;font-weight:700;color:var(--text2);font-family:'JetBrains Mono',monospace;
         letter-spacing:.02em">${hora}</span>
       ${!esMismoDia?`
         <span style="font-size:10px;font-weight:700;background:rgba(239,68,68,.18);color:#ef4444;
-          padding:2px 7px;border-radius:20px;font-family:'Courier New',monospace;
+          padding:2px 7px;border-radius:20px;font-family:'JetBrains Mono',monospace;
           letter-spacing:.03em">${diaLabel}</span>`:''}
       ${esManual?`
         <span style="font-size:10px;font-weight:700;background:rgba(245,158,11,.15);color:#f59e0b;
@@ -1504,4 +1508,3 @@ showScreen('login');
 </script>
 </body>
 </html>
-
